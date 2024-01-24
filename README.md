@@ -7,7 +7,7 @@ We aim to improve developer efficiency by giving them tools to enable good pract
 
 ## Action groups
 
-Details to come
+* R (`R.yml`): Checks related to the R programming language.
 
 ## Structure
 
