@@ -1,0 +1,21 @@
+---
+# This example file will enable R language checks on push or PR to the main
+# branch.
+#
+# Note the @main in `uses:` on the last line. This will call the latest version
+# of the workflow from the `main` brnach in the RMI-PACTA/actions repo. You can
+# also specify a tag from that repo, or a commit SHA to pin action versions.
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches: 
+      - main
+
+name: R
+
+jobs:
+  R-package:
+    name: R Package Checks
+    uses: RMI-PACTA/actions/.github/workflows/R@main
