@@ -1,0 +1,21 @@
+---
+name: Sync GitHub Issues to Azure DevOps 
+on:
+  workflow_call:
+
+jobs:
+  alert:
+    if: ${{ !github.event.issue.pull_request }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: danhellem/github-actions-issue-to-work-item@v2.2
+        env:
+          ado_token: "${{ secrets.ADO_PERSONAL_ACCESS_TOKEN }}" 
+          github_token: "${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}"
+          ado_organization: "RMI-PACTA"
+          ado_project: "2DegreesInvesting"
+          ado_area_path: "Test Team 1"
+          ado_new_state: "New"
+          ado_active_state: "Committed"
+          ado_close_state: "Done" 
+          log_level: 100
