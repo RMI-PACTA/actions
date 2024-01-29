@@ -1,0 +1,11 @@
+---
+name: docker
+on:
+  workflow_call:
+
+jobs:
+  placeholder:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Always Fail
+        run: exit 1
