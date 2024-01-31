@@ -22,4 +22,3 @@ Files that do not have a prefix are "caller" workflows, which call the other wor
 ### R (`R.yml`)
 
 * lintr: runs `lintr::lint_package()` with [default configuration](https://lintr.r-lib.org/articles/lintr.html#configuring-linters) (`lintr::default_linters()` for repos that do not have a `.lintr` file)
-* codecov: checks test coverage (using `covr`) and uploads results to codecov.io
