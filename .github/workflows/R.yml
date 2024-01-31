@@ -2,10 +2,16 @@
 name: R
 on:
   workflow_call:
+    inputs:
+      do-lint:
+        description: 'Flag to run `lintr`'
+        required: false
+        default: true
+        type: boolean
+
 
 jobs:
-  placeholder:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Always Fail
-        run: exit 1
+
+  lintr:
+    if: ${{ inputs.do-lint }}
+    uses: ./.github/workflows/R-lintr.yml
