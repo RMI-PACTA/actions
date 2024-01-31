@@ -8,6 +8,8 @@ We aim to improve developer efficiency by giving them tools to enable good pract
 ## Action groups
 
 * R (`R.yml`): Checks related to the R programming language.
+* Docker (`docker.yml`): actions related to checking and building Docker images
+* General (`general.yml`): Actions to run on all repositories, regardless of languages involved
 
 ## Structure
 
