@@ -1,11 +1,24 @@
 ---
-name: docker
+name: Docker
+
 on:
   workflow_call:
+    inputs:
+      dockerfile:
+        description: 'Path to Dockerfile'
+        required: false
+        default: 'Dockerfile'
+        type: string
+      do-lint:
+        description: 'Flag to lint Dockerfile'
+        required: false
+        default: true
+        type: boolean
 
 jobs:
-  placeholder:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Always Fail
-        run: exit 1
+
+  hadolint:
+    if: ${{ inputs.do-lint }}
+    uses: ./.github/workflows/docker-run-hadolint.yml
+    with:
+      dockerfile: ${{ inputs.dockerfile }}
