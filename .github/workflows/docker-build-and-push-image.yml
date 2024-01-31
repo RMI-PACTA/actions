@@ -1,0 +1,113 @@
+---
+name: Build and push docker image
+
+on:
+  workflow_call:
+    inputs:
+      dockerfile:
+        description: 'Path to Dockerfile'
+        required: false
+        default: 'Dockerfile'
+        type: string
+      image-name:
+        description: 'Docker image name'
+        default: ${{ github.repository }}
+        required: false
+        type: string
+      tags:
+        description: 'Docker image tags, separated by linebreaks (yaml: |-)'
+        required: false
+        type: string
+        default: |-
+          ${{ github.ref }}
+          ${{ github.sha }}
+      registry:
+        description: 'Docker registry to push image to. registry/image-name must fully define a remote image.'
+        type: string
+        required: false
+        default: "ghcr.io"
+      docker-no-cache:
+        description: 'build step name passed to docker buildx --no-cache-filter'
+        type: string
+        required: false
+        default: 'install-pacta'
+    outputs:
+      all-tags:
+        description: "All Full pushed image name including host/registry, name, and tag"
+        value: ${{ jobs.docker.outputs.all-tags }}
+      full-image-name:
+        description: "Full pushed image name including host/registry, name, and tag"
+        value: ${{ jobs.docker.outputs.full-image-name }}
+
+jobs:
+  docker:
+    name: Build and Push Image
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    timeout-minutes: 30
+    outputs:
+      full-image-name: ${{ steps.image-name.outputs.full-image-name }}
+      all-tags: ${{ steps.image-name.outputs.all-tags }}
+
+    steps:
+
+      - name: Dump GitHub event context
+        env:
+          INPUT_CONTEXT: ${{ toJson(github.event) }}
+        run: echo "$INPUT_CONTEXT"      # - name: Define image name
+      - name: Dump Inputs context
+        env:
+          INPUT_CONTEXT: ${{ toJson(inputs) }}
+        run: echo "$INPUT_CONTEXT"      # - name: Define image name
+
+      - name: Prepare image tags
+        id: image-name
+        run: |
+          tags=(${{ inputs.tags }})
+          all_tags=()
+          for tag in "${tags[@]}"; do
+          clean_tag=$(echo "$tag" | sed \
+              -e 's/^refs\/heads\///g' \
+              -e 's/^refs\/pull\/\(.*\)\/merge/pr\1/' \
+              -e 's/^refs\/tags\///g'
+              )
+              image_tag="${{ inputs.registry }}/${{ inputs.image-name }}:$clean_tag"
+              image_tag=$(echo $image_tag | tr '[A-Z]' '[a-z]')
+              all_tags+=("$image_tag")
+              echo "$image_tag"
+          done
+          echo "full-image-name=${all_tags[0]}" >> "$GITHUB_OUTPUT"
+          echo "all-tags=${all_tags[@]}" | sed 's/ /,/g' >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@v3
+        name: export full-image-name
+        with:
+          name: full-image-name
+          path: .
+
+      - uses: actions/upload-artifact@v3
+        name: export all-tags
+        with:
+          name: all-tags
+          path: .
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: ${{ steps.image-name.outputs.all-tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=min
+          no-cache-filters: ${{ inputs.docker-no-cache }}

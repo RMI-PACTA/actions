@@ -1,0 +1,31 @@
+name: Snyk Container
+
+on:
+  workflow_call:
+    inputs:
+      dockerfile:
+        description: 'Path to Dockerfile'
+        required: false
+        default: 'Dockerfile'
+        type: string
+      image:
+        description: 'Docker image to test.'
+        required: true
+        type: string
+    secrets: 
+      SNYK_TOKEN:
+        description: 'SNYK API token'
+        required: true
+
+jobs:
+  snyk:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Run Snyk to check Docker image for vulnerabilities
+      uses: snyk/actions/docker@master
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+        image: ${{ inputs.image }}
+        args: --file=${{ inputs.dockerfile }}
