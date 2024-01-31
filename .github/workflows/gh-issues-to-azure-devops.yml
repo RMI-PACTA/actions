@@ -1,7 +1,7 @@
----
-name: Sync GitHub Issues to Azure DevOps 
 on:
   workflow_call:
+
+name: Sync GitHub Issues to Azure DevOps 
 
 jobs:
   alert:
@@ -10,8 +10,8 @@ jobs:
     steps:
       - uses: danhellem/github-actions-issue-to-work-item@v2.2
         env:
-          ado_token: "${{ secrets.ADO_PERSONAL_ACCESS_TOKEN }}" 
-          github_token: "${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}"
+          ado_token: "${{ ado.token }}" 
+          github_token: "${{ github.token }}"
           ado_organization: "RMI-PACTA"
           ado_project: "2DegreesInvesting"
           ado_area_path: "Test Team 1"
