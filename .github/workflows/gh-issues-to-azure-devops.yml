@@ -21,25 +21,25 @@ jobs:
           ado_active_state: "Committed"
           ado_close_state: "Done" 
           log_level: 100
-  add_comment:
-    needs: alert
-    runs-on: ubuntu-latest
-    steps:
-      - name: Find Comment
-        # https://github.com/peter-evans/find-comment
-        uses: peter-evans/find-comment@v2
-        id: fc
-        with:
-          issue-number: ${{ github.event.issue.number }}
-          comment-author: 'github-actions[bot]'
-          body-includes: ADO ticket
-
-      - name: Create or update comment
-        # https://github.com/peter-evans/create-or-update-comment
-        uses: peter-evans/create-or-update-comment@v3
-        with:
-          comment-id: ${{ steps.fc.outputs.comment-id }}
-          issue-number: ${{ github.event.issue.number }}
-          body: |
-            ADO ticket automatically created for this issue: (${{ steps.gh_to_ado.id }})
-          edit-mode: replace
+  # add_comment:
+  #   needs: alert
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Find Comment
+  #       # https://github.com/peter-evans/find-comment
+  #       uses: peter-evans/find-comment@v2
+  #       id: fc
+  #       with:
+  #         issue-number: ${{ github.event.issue.number }}
+  #         comment-author: 'github-actions[bot]'
+  #         body-includes: ADO ticket
+  #
+  #     - name: Create or update comment
+  #       # https://github.com/peter-evans/create-or-update-comment
+  #       uses: peter-evans/create-or-update-comment@v3
+  #       with:
+  #         comment-id: ${{ steps.fc.outputs.comment-id }}
+  #         issue-number: ${{ github.event.issue.number }}
+  #         body: |
+  #           ADO ticket automatically created for this issue: (${{ steps.gh_to_ado.id }})
+  #         edit-mode: replace
