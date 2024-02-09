@@ -16,4 +16,5 @@ jobs:
   issues:
     name: Run issues workflows
     uses: RMI-PACTA/actions/.github/workflows/issues@main
+    secrets: inherit
 
