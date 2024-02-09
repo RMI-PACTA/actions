@@ -3,19 +3,32 @@ name: GH issues
 on:
   workflow_call:
     inputs:
+      ado_area_path:
+        description: 'ADO area path where ADO tickets should be created'
+        required: true
+        default: "2DegreesInvesting\\Test Team 1"
+        type: string
+      ado_token:
+        description: 'ADO Personal Acess Token'
+        required: false
+        default: "${{ secrets.ADO_PERSONAL_ACCESS_TOKEN }}"
+        type: string
+      github_token:
+        description: 'GH Personal Access Token'
+        required: false
+        default: "${{ secrets.GH_TO_ADO_PAT }}"
+        type: string
       do-gh-to-ado:
         description: 'Flag to run `gh-to-ado`'
         required: false
         default: true
         type: boolean
-      ado_area_path:
-        description: 'ADO area path where ADO tickets should be created'
-        required: true
-        default: true
-        type: string
+
 
 jobs:
   gh-to-ado:
     if: ${{ inputs.do-gh-to-ado }}
     uses: ./.github/workflows/issues-gh-to-ado.yml
+    with:
+      ado_area_path: $${{ inputs.ado_area_path}}
     secrets: inherit
