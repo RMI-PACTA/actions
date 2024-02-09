@@ -8,13 +8,14 @@ on:
         required: false
         default: true
         type: boolean
+      ado_area_path:
+        description: 'ADO area path where ADO tickets should be created'
+        required: true
+        default: true
+        type: string
 
 jobs:
   gh-to-ado:
     if: ${{ inputs.do-gh-to-ado }}
     uses: ./.github/workflows/issues-gh-to-ado.yml
-    with:
-      ado_area_path: "2DegreesInvesting\\Test Team 1"
-    secrets:
-      ado_token: "${{ secrets.ADO_PERSONAL_ACCESS_TOKEN }}" 
-      github_token: "${{ secrets.GH_TO_ADO_PAT }}"
+    secrets: inherit
