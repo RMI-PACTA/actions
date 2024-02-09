@@ -1,0 +1,15 @@
+---
+name: GH issues
+on:
+  workflow_call:
+    inputs:
+      do-gh-to-ado:
+        description: 'Flag to run `gh-to-ado`'
+        required: false
+        default: true
+        type: boolean
+
+jobs:
+  gh-to-ado:
+    if: ${{ inputs.do-gh-to-ado }}
+    uses: ./.github/workflows/issues-gh-to-ado.yml
