@@ -1,0 +1,32 @@
+---
+name: Check R system dependencies
+
+on:
+  workflow_call:
+    inputs:
+      image:
+        required: true
+        type: string
+
+jobs:
+
+  check-system-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Pull image'
+        run: |
+          echo ${{ inputs.image }}
+          docker pull ${{ inputs.image }}
+      - name: 'Run pak::sysreqs_check_installed()'
+        run: |
+
+          docker run \
+          --rm \
+          --entrypoint "/bin/sh" \
+          ${{ inputs.image }} \
+          -c "Rscript -e '
+            x <- pak::sysreqs_check_installed()
+            print(x)
+            is_installed <- as.data.frame(x)[[\"installed\"]]
+            stopifnot(all(is_installed))
+          '"
