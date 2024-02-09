@@ -10,6 +10,7 @@ We aim to improve developer efficiency by giving them tools to enable good pract
 * R (`R.yml`): Checks related to the R programming language.
 * Docker (`docker.yml`): actions related to checking and building Docker images
 * General (`general.yml`): Actions to run on all repositories, regardless of languages involved
+* Issues (`issues.yml`): Actions to run when issues are created or modified.
 
 ## Structure
 
@@ -22,3 +23,7 @@ Files that do not have a prefix are "caller" workflows, which call the other wor
 ### R (`R.yml`)
 
 * lintr: runs `lintr::lint_package()` with [default configuration](https://lintr.r-lib.org/articles/lintr.html#configuring-linters) (`lintr::default_linters()` for repos that do not have a `.lintr` file)
+
+### Issues (`issues.yml`)
+
+* gh-to-ado: creates and links a new ticket in Azure DevOps when a GitHub issue is labelled "ADO" (applies both to newly created and updated issues)
