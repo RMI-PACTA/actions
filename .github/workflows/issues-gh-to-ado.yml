@@ -10,7 +10,7 @@ on:
       ADO_TOKEN:
         description: "ADO personal access token"
         required: true
-      GITHUB_TOKEN:
+      GH_TOKEN:
         description: "GitHub personal access token"
         required: true
 
@@ -25,7 +25,7 @@ jobs:
         id: gh_to_ado
         env:
           ado_token: "${{ secrets.ADO_TOKEN }}" 
-          github_token: "${{ secrets.GITHUB_TOKEN }}"
+          github_token: "${{ secrets.GH_TOKEN }}"
           ado_organization: "RMI-PACTA"
           ado_project: "2DegreesInvesting"
           ado_area_path: "${{ inputs.ado_area_path }}"

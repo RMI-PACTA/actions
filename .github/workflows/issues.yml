@@ -17,11 +17,9 @@ on:
       ADO_TOKEN:
         description: 'ADO personal acess token'
         required: false
-        type: string
-      GITHUB_TOKEN:
+      GH_TOKEN:
         description: 'GH personal access token'
         required: false
-        type: string
 
 jobs:
   gh-to-ado:
@@ -30,5 +28,5 @@ jobs:
     with:
       ado_area_path: ${{ inputs.ado_area_path}}
     secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
       ADO_TOKEN: ${{ secrets.ADO_TOKEN }}
