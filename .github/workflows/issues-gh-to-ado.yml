@@ -1,5 +1,13 @@
 on:
   workflow_call:
+    inputs:
+      ado_area_path:
+        description: 'ADO Area Path'
+        required: false
+        default: '2DegreesInvesting\\Test Team 1'
+        type: string
+      ado_token:
+        
 
 name: Sync GitHub Issues to Azure DevOps 
 

@@ -31,4 +31,4 @@ jobs:
     uses: ./.github/workflows/issues-gh-to-ado.yml
     with:
       ado_area_path: $${{ inputs.ado_area_path}}
-    secrets: inherit
+      secrets: inherit
