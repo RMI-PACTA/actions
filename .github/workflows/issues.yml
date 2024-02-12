@@ -8,27 +8,27 @@ on:
         required: true
         default: "2DegreesInvesting\\Test Team 1"
         type: string
-      ado_token:
-        description: 'ADO Personal Acess Token'
-        required: false
-        default: "${{ secrets.ADO_PERSONAL_ACCESS_TOKEN }}"
-        type: string
-      github_token:
-        description: 'GH Personal Access Token'
-        required: false
-        default: "${{ secrets.GH_TO_ADO_PAT }}"
-        type: string
       do-gh-to-ado:
         description: 'Flag to run `gh-to-ado`'
         required: false
         default: true
         type: boolean
-
+    secrets:
+      ADO_TOKEN:
+        description: 'ADO personal acess token'
+        required: false
+        type: string
+      GITHUB_TOKEN:
+        description: 'GH personal access token'
+        required: false
+        type: string
 
 jobs:
   gh-to-ado:
     if: ${{ inputs.do-gh-to-ado }}
     uses: ./.github/workflows/issues-gh-to-ado.yml
     with:
-      ado_area_path: $${{ inputs.ado_area_path}}
-    secrets: inherit
+      ado_area_path: ${{ inputs.ado_area_path}}
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      ADO_TOKEN: ${{ secrets.ADO_TOKEN }}
