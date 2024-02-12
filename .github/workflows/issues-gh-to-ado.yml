@@ -1,5 +1,18 @@
 on:
   workflow_call:
+    inputs:
+      ado_area_path:
+        description: "ADO area path where ADO tickets are created."
+        required: true
+        default: "2DegreesInvesting\\Test Team 1"
+        type: string
+    secrets:
+      ADO_TOKEN:
+        description: "ADO personal access token"
+        required: true
+      GITHUB_TOKEN:
+        description: "GitHub personal access token"
+        required: true
 
 name: Sync GitHub Issues to Azure DevOps 
 
@@ -11,11 +24,11 @@ jobs:
       - uses: danhellem/github-actions-issue-to-work-item@v2.2
         id: gh_to_ado
         env:
-          ado_token: "${{ secrets.ADO_PERSONAL_ACCESS_TOKEN }}" 
-          github_token: "${{ secrets.GH_TO_ADO_PAT }}"
+          ado_token: "${{ secrets.ADO_TOKEN }}" 
+          github_token: "${{ secrets.GITHUB_TOKEN }}"
           ado_organization: "RMI-PACTA"
           ado_project: "2DegreesInvesting"
-          ado_area_path: "2DegreesInvesting\\Test Team 1"
+          ado_area_path: "${{ inputs.ado_area_path }}"
           ado_wit: "Product Backlog Item"
           ado_new_state: "New"
           ado_active_state: "Committed"
