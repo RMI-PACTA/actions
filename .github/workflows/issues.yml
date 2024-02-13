@@ -14,13 +14,12 @@ on:
         default: true
         type: boolean
     secrets:
+      GH_TOKEN:
+        description: "GH personal access token"
+        required: false
       ADO_TOKEN:
         description: 'ADO personal acess token'
         required: false
-      GH_TOKEN:
-        description: 'GH personal access token'
-        required: false
-
 jobs:
   gh-to-ado:
     if: ${{ inputs.do-gh-to-ado }}
