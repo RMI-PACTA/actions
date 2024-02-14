@@ -14,9 +14,6 @@ on:
         default: true
         type: boolean
     secrets:
-      GH_TOKEN:
-        description: "GH personal access token"
-        required: false
       ADO_TOKEN:
         description: 'ADO personal acess token'
         required: false
@@ -27,5 +24,4 @@ jobs:
     with:
       ado_area_path: ${{ inputs.ado_area_path}}
     secrets:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       ADO_TOKEN: ${{ secrets.ADO_TOKEN }}
