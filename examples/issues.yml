@@ -23,5 +23,4 @@ jobs:
     with:
       ado_area_path: "2DegreesInvesting\\Test Team 1"
     secrets:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       ADO_TOKEN: ${{ secrets.ADO_PERSONAL_ACCESS_TOKEN }}
