@@ -5,7 +5,7 @@ on:
     inputs:
       ado_area_path:
         description: 'ADO area path where ADO tickets should be created'
-        required: true
+        required: false
         default: "2DegreesInvesting\\Test Team 1"
         type: string
       do-gh-to-ado:
@@ -27,5 +27,5 @@ jobs:
     with:
       ado_area_path: ${{ inputs.ado_area_path}}
     secrets:
-      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       ADO_TOKEN: ${{ secrets.ADO_TOKEN }}

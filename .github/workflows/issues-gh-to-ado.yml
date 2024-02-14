@@ -24,7 +24,7 @@ jobs:
         id: gh_to_ado
         env:
           ado_token: "${{ secrets.ADO_TOKEN }}" 
-          github_token: "${{ secrets.GH_TOKEN }}"
+          github_token: "${{ secrets.GITHUB_TOKEN }}"
           ado_organization: "RMI-PACTA"
           ado_project: "2DegreesInvesting"
           ado_area_path: "${{ inputs.ado_area_path }}"
