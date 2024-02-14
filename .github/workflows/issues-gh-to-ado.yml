@@ -7,9 +7,6 @@ on:
         default: "2DegreesInvesting\\Test Team 1"
         type: string
     secrets:
-      GH_TOKEN:
-        description: "GH personal access token"
-        required: true
       ADO_TOKEN:
         description: "ADO personal access token"
         required: true
