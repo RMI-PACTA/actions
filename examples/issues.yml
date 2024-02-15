@@ -1,7 +1,7 @@
 ---
 # This example file will enable actions that trigger on created or modified GitHub issues. 
 #
-# Note the @maain in `uses:` on the last line. This will call the latest version of the workflow from the `main` branch in the RMI-PACTA/actions repo.
+# Note the @main in `uses:` on the last line. This will call the latest version of the workflow from the `main` branch in the RMI-PACTA/actions repo.
 # You can also specify a tag from that repo, or a commit SHA to pin action versions.
 on:
   issues:
