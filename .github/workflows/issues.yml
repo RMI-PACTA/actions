@@ -1,0 +1,26 @@
+---
+name: GH issues
+on:
+  workflow_call:
+    inputs:
+      ado_area_path:
+        description: 'ADO area path where ADO tickets should be created'
+        required: false
+        type: string
+      do-gh-to-ado:
+        description: 'Flag to run `gh-to-ado`'
+        required: false
+        default: true
+        type: boolean
+    secrets:
+      ADO_TOKEN:
+        description: 'ADO personal acess token'
+        required: false
+jobs:
+  gh-to-ado:
+    if: ${{ inputs.do-gh-to-ado }}
+    uses: ./.github/workflows/issues-gh-to-ado.yml
+    with:
+      ado_area_path: ${{ inputs.ado_area_path}}
+    secrets:
+      ADO_TOKEN: ${{ secrets.ADO_TOKEN }}
