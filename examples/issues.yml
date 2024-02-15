@@ -19,7 +19,7 @@ permissions:
 jobs:
   issues:
     name: Run issues workflows
-    uses: RMI-PACTA/actions/.github/workflows/issues@main
+    uses: RMI-PACTA/actions/.github/workflows/issues.yml@main
     with:
       ado_area_path: "2DegreesInvesting\\Test Team 1"
     secrets:
