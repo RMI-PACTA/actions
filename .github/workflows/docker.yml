@@ -35,7 +35,7 @@ jobs:
 
   hadolint:
     if: ${{ inputs.do-lint }}
-    uses: ./.github/workflows/docker-run-hadolint.yml
+    uses: ./.github/workflows/docker-hadolint.yml
     with:
       dockerfile: ${{ inputs.dockerfile }}
 
