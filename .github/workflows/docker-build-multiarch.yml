@@ -8,7 +8,7 @@ on:
   workflow_call:
     inputs:
       image-name:
-        description: image to build, including registry (only ghcr.io supported)
+        description: full name of image to build, including user (ex. user/app)
         required: true
         type: string
       registry:
