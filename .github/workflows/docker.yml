@@ -9,6 +9,11 @@ on:
         required: false
         default: 'Dockerfile'
         type: string
+      image-name:
+        description: 'Name for docker image (default: full repository name)'
+        required: false
+        default: ${{ github.repository }}
+        type: string
       do-lint:
         description: 'Flag to lint Dockerfile'
         required: false
@@ -39,7 +44,7 @@ jobs:
     uses: ./.github/workflows/docker-build-multiarch.yml
     secrets: inherit
     with:
-      image-name: ${{ github.repository }}
+      image-name: ${{ inputs.image-name }}
 
   check-r-sysdeps:
     if: ${{ inputs.do-check-r-sysdeps }}
