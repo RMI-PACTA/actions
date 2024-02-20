@@ -1,0 +1,248 @@
+---
+name: Build and push docker image
+
+# This workflow is based on, but diverges from the example here:
+# https://docs.docker.com/build/ci/github-actions/multi-platform/#distribute-build-across-multiple-runners
+
+on:
+  workflow_call:
+    inputs:
+      image-name:
+        description: image to build, including registry (only ghcr.io supported)
+        required: true
+        type: string
+      registry:
+        description: registry to push image to (only default ghcr.io is currently supported)
+        required: false
+        type: string
+        default: ghcr.io
+      additional-image-tags:
+        description: Additional tags to tag image with
+        required: false
+        type: string
+    outputs:
+      full-image-name:
+        description: "Full pushed image name including host/registry, name, and tag"
+        value: ${{ jobs.merge.outputs.full-image-name }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      # fail if any build fails
+      fail-fast: true
+      # build amd64 and arm64 in parallel
+      matrix:
+        platform:
+          - linux/amd64
+          - linux/arm64
+    # write to packages (ghcr.io)
+    permissions:
+      packages: write
+      contents: read
+    # arm64 builds from source, and can take a while.
+    timeout-minutes: 90
+    # used in next steps
+    outputs:
+      registry-image: ${{ steps.export-outputs.outputs.registry-image }}
+      dockerfile-labels: ${{ steps.custom-labels.outputs.dockerfile-labels }}
+
+
+    steps:
+
+      # define variables used later in this job
+      # PLATFORM_PAIR is used to define the digest name
+      - name: Prepare
+        run: |
+          platform=${{ matrix.platform }}
+          registry_image=$(
+            echo "${{ inputs.registry }}/${{ inputs.image-name }}" | \
+            tr '[:upper:]' '[:lower:]' \
+          )
+          PLATFORM_PAIR=${platform//\//-}
+          echo "PLATFORM_PAIR=$PLATFORM_PAIR"
+          echo "PLATFORM_PAIR=$PLATFORM_PAIR" >> $GITHUB_ENV
+          REGISTRY_IMAGE=${registry_image}
+          echo "REGISTRY_IMAGE=$REGISTRY_IMAGE"
+          echo "REGISTRY_IMAGE=$REGISTRY_IMAGE" >> $GITHUB_ENV
+
+      # Checkout the repo, so we can build from it.
+      # This defaults to a shollow (depth=1) clone
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Extract the LABEL lines in the dockerfile, and extract their contents.
+      # write to both env and as an output to be used in merge job. This will
+      # let us use the LABELs defined there as the labels for our image. Note
+      # these export a multiline string to GITHUB_OUTPUT and GITHUB_ENV. You
+      # can see more about that here:
+      # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
+      - name: Identify LABELs in dockerfile
+        id: custom-labels
+        run: |
+          DOCKERFILE_LABELS="$(grep "^LABEL" Dockerfile | sed 's/^LABEL[[:space:]]*//')"
+          echo "$DOCKERFILE_LABELS"
+          echo "DOCKERFILE_LABELS<<EOF" >> $GITHUB_ENV
+          echo "$DOCKERFILE_LABELS" >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+          echo 'dockerfile-labels<<EOF' >> $GITHUB_OUTPUT
+          echo "$DOCKERFILE_LABELS" >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
+
+      # Setup docker metadata, including tags and labels (and annotations)
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY_IMAGE }}
+          annotations:
+            ${{ env.DOCKERFILE_LABELS }}
+          labels:
+            ${{ env.DOCKERFILE_LABELS }}
+
+      # set up our build environment
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ inputs.registry }}
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Actually build the image (for a single architecture)!
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          # Only for one platform
+          platforms: ${{ matrix.platform }}
+          # include the labels from the meta step
+          labels: ${{ steps.meta.outputs.labels }}
+          # the same for annotations
+          annotations: ${{ steps.meta.outputs.annotations }}
+          # push-by-digest doesn't tag the image
+          # That comes in the merge step
+          # Consequently, we will have untagged images in our repo.
+          outputs: type=image,name=${{ env.REGISTRY_IMAGE }},push-by-digest=true,name-canonical=true,push=true
+          # Use the GitHub actions cache to speed up repeated builds
+          cache-from: type=gha
+          cache-to: type=gha,mode=min
+          # but don't cache the install pacta step.
+          no-cache-filters: install-pacta
+
+      # export the digest (SHA) of the image built, so that the merge step can include them
+      - name: Export digest
+        run: |
+          mkdir -p /tmp/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}"
+
+      - name: Upload digest
+        uses: actions/upload-artifact@v4
+        with:
+          name: digests-${{ env.PLATFORM_PAIR }}
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+      # Export the image name to the outputs
+      - name: Export Outputs
+        id: export-outputs
+        run: |
+          echo "registry-image=${{ env.REGISTRY_IMAGE }}" >> "$GITHUB_OUTPUT"
+
+  # Step 2: take the individual images, and combine them into a single multi-arch image
+  merge:
+    runs-on: ubuntu-latest
+    needs:
+      - build
+    outputs:
+      full-image-name: ${{ steps.export-outputs.outputs.full-image-name }}
+    steps:
+
+      # Get all the digests we created before, which are just the SHAs of the
+      # images (acting as references) that have been uploaded to registry
+      - name: Download digests
+        uses: actions/download-artifact@v4
+        with:
+          path: /tmp/digests
+          pattern: digests-*
+          merge-multiple: true
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Setup metadata. note comments in this block
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        env:
+          # currently buildx imagetools create doesn't support the `manifest`
+          # level, which is the default for this action. Here we're using the
+          # manifest-descriptor and index, to make sure that we see those
+          # annotations on the manifest.
+          DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest-descriptor,index
+        with:
+          images: ${{ needs.build.outputs.registry-image }}
+          # using the yaml | line feed, which preserves newlines
+          tags: |
+            type=schedule
+            type=ref,event=branch
+            type=ref,event=tag
+            type=ref,event=pr
+            ${{ inputs.additional-image-tags }}
+          # pass in the comma separated strings created in the build step.
+          labels: ${{ needs.build.outputs.dockerfile-labels }}
+          annotations: ${{ needs.build.outputs.dockerfile-labels }}
+          # for labels and annotations, since we collapsed newlines, we're
+          # explicitly calling out the separator we used (non-default)
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ inputs.registry }}
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Use JQ to extract the annotations and tags, and prefix them with the
+      # appropriate flags (--annotation and --tag). This is mostly here so that
+      # we can see the echo output as a debugging step.
+      # NOTE: Double quotes are stripped from the annotation sting (LABELs)
+      - name: Prepare Image Annotations and Tags
+        working-directory: /tmp/digests
+        run: |
+          ANNOTATION_STRING="$(jq -rc '.annotations | map(split("\"") | join("")) | map("--annotation \"" + . + "\"") | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON")"
+          echo "annotations: $ANNOTATION_STRING"
+          echo "ANNOTATION_STRING=$ANNOTATION_STRING" >> $GITHUB_ENV
+          TAG_STRING="$(jq -rc '.tags | map("--tag \"" + . + "\"") | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON")"
+          echo "tags: $TAG_STRING"
+          echo "TAG_STRING=$TAG_STRING" >> $GITHUB_ENV
+
+      # Actually create the multi-architecture manifest/index. Note that this
+      # command cannot be reproduced locally (unless you have write permissions
+      # for the GHCR repo). since it automatically pushes.
+      - name: Create manifest list and push
+        working-directory: /tmp/digests
+        run: |
+          docker buildx imagetools create \
+            ${{ env.ANNOTATION_STRING }} \
+            ${{ env.TAG_STRING }} \
+            $(printf '${{ needs.build.outputs.registry-image }}@sha256:%s ' *)
+
+      # inspect the manifest we just created. Debugging
+      - name: Inspect image
+        run: |
+          docker buildx imagetools inspect ${{ needs.build.outputs.registry-image }}:${{ steps.meta.outputs.version }} --raw
+
+      # Export the image name, for use in downstream jobs
+      - name: Export Outputs
+        id: export-outputs
+        run: |
+          first_tag=$(jq -cr '.tags[0]' <<< "$DOCKER_METADATA_OUTPUT_JSON")
+          echo "full-image-name=$first_tag" >> "$GITHUB_OUTPUT"
