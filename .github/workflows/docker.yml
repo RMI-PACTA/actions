@@ -14,6 +14,17 @@ on:
         required: false
         default: true
         type: boolean
+      do-build-and-push:
+        description: 'Flag to Build and push docker image to GitHub packages'
+        required: false
+        default: true
+        type: boolean
+      do-check-r-sysdeps:
+        description: 'Flag to Build and push docker image to GitHub packages'
+        required: false
+        default: true
+        type: boolean
+
 
 jobs:
 
@@ -22,3 +33,17 @@ jobs:
     uses: ./.github/workflows/docker-run-hadolint.yml
     with:
       dockerfile: ${{ inputs.dockerfile }}
+
+  build-docker-image:
+    if: ${{ inputs.do-build-and-push }}
+    uses: ./.github/workflows/docker-build-multiarch.yml
+    secrets: inherit
+    with:
+      image-name: ${{ github.repository }}
+
+  check-r-sysdeps:
+    if: ${{ inputs.do-check-r-sysdeps }}
+    uses: ./.github/workflows/docker-check-R-sysdeps.yml
+    needs: [build-docker-image]
+    with:
+      image: ${{needs.build-docker-image.outputs.full-image-name}}
