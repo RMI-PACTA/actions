@@ -44,7 +44,7 @@ jobs:
       matrix:
         platform:
           - linux/amd64
-          - linux/arm64
+          # - linux/arm64
     # write to packages (ghcr.io)
     permissions:
       packages: write
