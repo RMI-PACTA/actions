@@ -2,17 +2,16 @@
 on:
   workflow_call:
     inputs:
-      dockerfile:
-        description: 'Path to Dockerfile'
-        required: false
-        default: 'Dockerfile'
+      full-image-name:
+        description: 'string describing image name, including registry'
+        required: true
         type: string
 
 
 
 jobs:
   add_comment:
-    needs: build-docker-image
+    if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
       - name: Find Comment
@@ -33,6 +32,6 @@ jobs:
           body: |
             Docker image from this PR (${{ github.event.pull_request.head.sha }}) created
             ```
-            docker pull ${{ needs.build-docker-image.outputs.full-image-name }}
+            docker pull ${{ inputs.full-image-name }}
             ```
           edit-mode: replace
