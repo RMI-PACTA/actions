@@ -40,7 +40,7 @@ jobs:
         id: table
         with:
           json: "${{ env.NEW_JSON }}"
-      - run: echo ${{ steps.table.outputs.table }}
+      - run: echo "${{ steps.table.outputs.table }}"
 
       - name: Find Comment
         # https://github.com/peter-evans/find-comment
