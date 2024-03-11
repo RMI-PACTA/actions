@@ -254,7 +254,7 @@ jobs:
             echo "comment-json-merge-${{ inputs.image-name }}-${{ inputs.registry }}.json" | \
             tr '/' '-' \
             )
-          echo "json_filename=$json_filename" >> "$GITHUB_ENV"
+          echo "json-filename=$json_filename" >> "$GITHUB_ENV"
           json_file="/tmp/comment-json/$json_filename"
           jq -n '{
             "git_sha": "${{ github.event.pull_request.head.sha }}",
