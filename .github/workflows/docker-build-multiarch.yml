@@ -249,10 +249,14 @@ jobs:
           echo "full-image-name=$first_tag" >> "$GITHUB_OUTPUT"
 
           mkdir -p /tmp/comment-json
+          json_file=$( \
+            echo "/tmp/comment-json/comment-json-merge-${{ inputs.image-name }}-${{ inputs.registry }}.json"
+            tr '/' '-' \
+            )
           jq -n '{
             "git_sha": "${{ github.event.pull_request.head.sha }}",
             "image": "${{ steps.export-outputs.outputs.full-image-name }}"
-          }' >> /tmp/comment-json/comment-json-merge-${{ inputs.image-name }}-${{ inputs.registry }}.json
+          }' >> $json_file
 
 
       - name: Upload comment JSON
