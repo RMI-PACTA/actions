@@ -55,8 +55,9 @@ jobs:
 
   add-comment:
     if: ${{ github.event_name == 'pull_request' }}
-    uses: ./.github/workflows/add-comment-simple.yml
+    uses: ./.github/workflows/add-comment-history.yml
     needs: [build-docker-image]
     with:
       full-image-name: ${{needs.build-docker-image.outputs.full-image-name}}
+      header: "Docker build status"
 

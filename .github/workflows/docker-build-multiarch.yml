@@ -247,3 +247,17 @@ jobs:
           first_tag=$(jq -cr '.tags[0]' <<< "$DOCKER_METADATA_OUTPUT_JSON")
           echo "full-image-name=$first_tag"
           echo "full-image-name=$first_tag" >> "$GITHUB_OUTPUT"
+
+          jq -n '{
+            "git_sha": "${{ github.event.pull_request.head.sha }}",
+            "image": "${{ steps.export-outputs.outputs.full-image-name }}"
+          }' >> /tmp/comment-json/comment-json-merge-${{ inputs.image-name }}-${{ inputs.registry }}.json
+
+
+      - name: Upload comment JSON
+        uses: actions/upload-artifact@v4
+        with:
+          name: comment-json-merge-${{ inputs.image-name }}-${{ inputs.registry }}
+          path: /tmp/comment-json/*
+          if-no-files-found: error
+          retention-days: 1
