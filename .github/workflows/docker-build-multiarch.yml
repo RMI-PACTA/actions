@@ -245,4 +245,5 @@ jobs:
         id: export-outputs
         run: |
           first_tag=$(jq -cr '.tags[0]' <<< "$DOCKER_METADATA_OUTPUT_JSON")
+          echo "full-image-name=$first_tag"
           echo "full-image-name=$first_tag" >> "$GITHUB_OUTPUT"
