@@ -3,6 +3,11 @@ name: R
 on:
   workflow_call:
     inputs:
+      do-r-cmd-check:
+        description: 'Flag to run `R CMD CHECK`'
+        required: false
+        default: true
+        type: boolean
       do-lint:
         description: 'Flag to run `lintr`'
         required: false
@@ -24,3 +29,7 @@ jobs:
   codecov:
     if: ${{ inputs.do-codecov }}
     uses: ./.github/workflows/R-codecov.yml
+
+  r-cmd-check:
+    if: ${{ inputs.do-r-cmd-check }}
+    uses: ./.github/workflows/R-CMD-check.yml
