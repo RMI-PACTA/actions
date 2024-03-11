@@ -30,6 +30,7 @@ jobs:
       - name: Merge new JSON
         id: json-merge
         run: |
+          ls -laR /tmp/comment-json
           new_json=$(jq -sc '.' /tmp/comment-json/*.json)
           echo "NEW_JSON=$NEW_JSON"
           echo "NEW_JSON=$NEW_JSON" >> $GITHUB_ENV
