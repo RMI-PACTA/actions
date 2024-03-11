@@ -52,6 +52,8 @@ jobs:
           body-includes: Docker image from this PR
 
       - name: Extract old JSON
+        run: |
+          echo ${{ steps.fc.outputs.comment-body }}
 
       - name: Create or update comment
         # https://github.com/peter-evans/create-or-update-comment
@@ -65,9 +67,6 @@ jobs:
             <details>
               <summary>History</summary>
               ${{ steps.table.outputs.table }}
-              <details>
-                <summary>History JSON</summary>
-                ${{ env.NEW_JSON }}
-              </details>
+              <details><summary>History JSON</summary>${{ env.NEW_JSON }}</details>
             </details>
           edit-mode: replace
