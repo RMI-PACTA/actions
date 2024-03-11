@@ -66,7 +66,9 @@ jobs:
             ${{ steps.table.outputs.table }}
             <details>
               <summary>History</summary>
+
               ${{ steps.table.outputs.table }}
-              <details><summary>History JSON</summary>${{ env.NEW_JSON }}</details>
+
+              <details><summary>History JSON</summary>`${{ env.NEW_JSON }}`</details>
             </details>
           edit-mode: replace
