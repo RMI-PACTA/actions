@@ -31,11 +31,11 @@ jobs:
         id: json-merge
         run: |
           ls -laR /tmp/comment-json
-          new_json=$(jq -sc '.' /tmp/comment-json/*.json)
+          NEW_JSON=$(jq -sc '.' /tmp/comment-json/*.json)
           echo "NEW_JSON=$NEW_JSON"
           echo "NEW_JSON=$NEW_JSON" >> $GITHUB_ENV
 
-      - name: create markdown table
+      - name: Create markdown table
         uses: buildingcash/json-to-markdown-table-action@v1
         id: table
         with:
@@ -50,6 +50,8 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: 'github-actions[bot]'
           body-includes: Docker image from this PR
+
+      - name: Extract old JSON
 
       - name: Create or update comment
         # https://github.com/peter-evans/create-or-update-comment
