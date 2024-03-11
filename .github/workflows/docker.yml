@@ -58,6 +58,5 @@ jobs:
     uses: ./.github/workflows/add-comment-history.yml
     needs: [build-docker-image]
     with:
-      full-image-name: ${{needs.build-docker-image.outputs.full-image-name}}
       header: "Docker build status"
 
