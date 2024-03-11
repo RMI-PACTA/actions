@@ -245,4 +245,30 @@ jobs:
         id: export-outputs
         run: |
           first_tag=$(jq -cr '.tags[0]' <<< "$DOCKER_METADATA_OUTPUT_JSON")
+          echo "full-image-name=$first_tag"
+          echo "full-image-name=$first_tag" >> "$GITHUB_ENV"
           echo "full-image-name=$first_tag" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare artifact for comment
+        run: |
+          mkdir -p /tmp/comment-json
+          json_filename=$( \
+            echo "comment-json-merge-${{ inputs.image-name }}-${{ inputs.registry }}.json" | \
+            tr '/' '-' \
+            )
+          echo "json-filename=$json_filename" >> "$GITHUB_ENV"
+          json_file="/tmp/comment-json/$json_filename"
+          jq -n '{
+            "commit_time": "${{ github.event.pull_request.updated_at }}",
+            "git_sha": "${{ github.event.pull_request.head.sha }}",
+            "image": "${{ steps.export-outputs.outputs.full-image-name }}"
+          }' >> $json_file
+
+
+      - name: Upload comment JSON
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.json-filename }}
+          path: /tmp/comment-json/*
+          if-no-files-found: error
+          retention-days: 1

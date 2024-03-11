@@ -1,0 +1,37 @@
+---
+on:
+  workflow_call:
+    inputs:
+      full-image-name:
+        description: 'string describing image name, including registry'
+        required: true
+        type: string
+
+
+
+jobs:
+  add_comment:
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Find Comment
+        # https://github.com/peter-evans/find-comment
+        uses: peter-evans/find-comment@v3
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: Docker image from this PR
+
+      - name: Create or update comment
+        # https://github.com/peter-evans/create-or-update-comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            Docker image from this PR (${{ github.event.pull_request.head.sha }}) created
+            ```
+            docker pull ${{ inputs.full-image-name }}
+            ```
+          edit-mode: replace
