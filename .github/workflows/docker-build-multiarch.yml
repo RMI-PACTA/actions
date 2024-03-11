@@ -254,6 +254,7 @@ jobs:
             echo "comment-json-merge-${{ inputs.image-name }}-${{ inputs.registry }}.json" | \
             tr '/' '-' \
             )
+          echo "json_filename=$json_filename" >> "$GITHUB_ENV"
           json_file="/tmp/comment-json/$json_filename"
           jq -n '{
             "git_sha": "${{ github.event.pull_request.head.sha }}",
@@ -264,7 +265,7 @@ jobs:
       - name: Upload comment JSON
         uses: actions/upload-artifact@v4
         with:
-          name: comment-json-merge-${{ inputs.image-name }}-${{ inputs.registry }}
+          name: ${{ env.json-filename }}
           path: /tmp/comment-json/*
           if-no-files-found: error
           retention-days: 1
