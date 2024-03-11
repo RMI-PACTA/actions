@@ -1,0 +1,70 @@
+---
+on:
+  workflow_call:
+    inputs:
+      artifact-prefix:
+        description: "prefix for artifacts containing JSON to be included in comment"
+        type: string
+        required: false
+        default: "comment-json-"
+      header:
+        description: 'Header text for comment'
+        required: true
+        type: string
+
+
+
+jobs:
+  add_comment:
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read new JSON
+        id: json-read
+        uses: actions/download-artifact@v4
+        with:
+          path: /tmp/comment-json
+          pattern: ${{ inputs.artifact-prefix }}*
+          merge-multiple: true
+
+      - name: Merge new JSON
+        id: json-merge
+        run: |
+          new_json=$(jq -sc '.' /tmp/comment-json/*.json)
+          echo "NEW_JSON=$NEW_JSON"
+          echo "NEW_JSON=$NEW_JSON" >> $GITHUB_ENV
+
+      - name: create markdown table
+        uses: buildingcash/json-to-markdown-table-action@v1
+        id: table
+        with:
+          json: "${{ env.NEW_JSON }}"
+      - run: echo ${{ steps.table.outputs.table }}
+
+      - name: Find Comment
+        # https://github.com/peter-evans/find-comment
+        uses: peter-evans/find-comment@v3
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: Docker image from this PR
+
+      - name: Create or update comment
+        # https://github.com/peter-evans/create-or-update-comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            # ${{ inputs.header }}
+            ${{ steps.table.outputs.table }}
+            <details>
+              <summary>History</summary>
+              ${{ steps.table.outputs.table }}
+              <details>
+                <summary>History JSON</summary>
+                ${{ env.NEW_JSON }}
+              </details>
+            </details>
+          edit-mode: replace
