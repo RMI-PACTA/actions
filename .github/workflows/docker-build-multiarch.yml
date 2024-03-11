@@ -248,6 +248,7 @@ jobs:
           echo "full-image-name=$first_tag"
           echo "full-image-name=$first_tag" >> "$GITHUB_OUTPUT"
 
+          mkdir -p /tmp/comment-json
           jq -n '{
             "git_sha": "${{ github.event.pull_request.head.sha }}",
             "image": "${{ steps.export-outputs.outputs.full-image-name }}"
