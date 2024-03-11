@@ -53,7 +53,7 @@ jobs:
 
       - name: Extract old JSON
         run: |
-          echo ${{ steps.fc.outputs.comment-body }} >> history.md
+          echo "${{ steps.fc.outputs.comment-body }}" >> history.md
           history_json=$(grep "History JSON" history.md | grep -o '\[.*\]')
           echo $history_json
           echo $history_json >> history_json.json
