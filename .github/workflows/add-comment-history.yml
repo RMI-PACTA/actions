@@ -62,7 +62,7 @@ jobs:
           echo $history_json
           echo $history_json >> history_json.json
           echo $new_json >> new_json.json
-          HISTORY_JSON=$(jq -sc '.' new_json.json history_json.json)
+          HISTORY_JSON=$(jq -sc 'flatten(1)' new_json.json history_json.json)
           echo "HISTORY_JSON=$HISTORY_JSON"
           echo "HISTORY_JSON=$HISTORY_JSON" >> $GITHUB_ENV
 
