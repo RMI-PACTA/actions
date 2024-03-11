@@ -259,7 +259,7 @@ jobs:
           echo "json-filename=$json_filename" >> "$GITHUB_ENV"
           json_file="/tmp/comment-json/$json_filename"
           jq -n '{
-            "commit_time": ${{ github.event.pull_request.updated_at }}
+            "commit_time": "${{ github.event.pull_request.updated_at }}"
             "git_sha": "${{ github.event.pull_request.head.sha }}",
             "image": "${{ steps.export-outputs.outputs.full-image-name }}"
           }' >> $json_file
