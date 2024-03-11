@@ -249,6 +249,8 @@ jobs:
           echo "full-image-name=$first_tag" >> "$GITHUB_ENV"
           echo "full-image-name=$first_tag" >> "$GITHUB_OUTPUT"
 
+      - name: Prepare artifact for comment
+        run: |
           mkdir -p /tmp/comment-json
           json_filename=$( \
             echo "comment-json-merge-${{ inputs.image-name }}-${{ inputs.registry }}.json" | \
@@ -258,7 +260,7 @@ jobs:
           json_file="/tmp/comment-json/$json_filename"
           jq -n '{
             "git_sha": "${{ github.event.pull_request.head.sha }}",
-            "image": "${{ env.full-image-name }}"
+            "image": "${{ steps.export-outputs.outputs.full-image-name }}"
           }' >> $json_file
 
 
