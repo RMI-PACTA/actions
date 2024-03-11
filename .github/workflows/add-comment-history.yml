@@ -49,11 +49,25 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: 'github-actions[bot]'
-          body-includes: Docker image from this PR
+          body-includes: ${{ inputs.header }}
 
       - name: Extract old JSON
         run: |
-          echo ${{ steps.fc.outputs.comment-body }}
+          echo ${{ steps.fc.outputs.comment-body }} >> history.md
+          history_json=$(grep "History JSON" history.md | grep -o '\[.*\]')
+          echo $history_json
+          echo $history_json >> history_json.json
+          echo ${{ env.NEW_JSON }} >> new_json.json
+          HISTORY_JSON=$(jq -sc '.' new_json.json history_json.json)
+          echo "HISTORY_JSON=$HISTORY_JSON"
+          echo "HISTORY_JSON=$HISTORY_JSON" >> $GITHUB_ENV
+
+      - name: Create history markdown table
+        uses: buildingcash/json-to-markdown-table-action@v1
+        id: table-history
+        with:
+          json: "${{ env.HISTORY_JSON }}"
+      - run: echo "${{ steps.table-history.outputs.table }}"
 
       - name: Create or update comment
         # https://github.com/peter-evans/create-or-update-comment
@@ -67,8 +81,8 @@ jobs:
             <details>
               <summary>History</summary>
 
-              ${{ steps.table.outputs.table }}
+              ${{ steps.table-history.outputs.table }}
 
-              <details><summary>History JSON</summary>`${{ env.NEW_JSON }}`</details>
+              <details><summary>History JSON</summary>`${{ env.HISTORY_JSON }}`</details>
             </details>
           edit-mode: replace
