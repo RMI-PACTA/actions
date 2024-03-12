@@ -42,17 +42,10 @@ jobs:
         with:
           use-public-rspm: true
 
-      - name: Install dependencies
-        uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          cache: true
-          dependencies: 'FALSE'
-          extra-packages: |
-            desc
-
       - name: compare versions
         run: |
           Rscript -e ' \
+            install.packages("desc"); \
             working_version <- desc::desc_get_version("working/DESCRIPTION"); \
             message("working version: ", working_version); \
             compare_version <- desc::desc_get_version("compare/DESCRIPTION"); \
