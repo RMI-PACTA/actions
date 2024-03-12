@@ -32,7 +32,7 @@ jobs:
           changes=$(git diff-index HEAD --name-only -- man/ NAMESPACE DESCRIPTION)
           if [ -n "$changes" ]; then
             echo "Changes found after documenting."
-            git diff
+            git --no-pager diff
             echo "$changes"
             echo "Please update documentation."
             exit 1
