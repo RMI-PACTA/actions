@@ -18,6 +18,11 @@ on:
         required: false
         default: true
         type: boolean
+      do-docs-check:
+        description: 'Flag to check documentation is up to date'
+        required: false
+        default: true
+        type: boolean
       r-cmd-check-error-on:
         description: 'Level of R CMD CHECK issue to fail check'
         required: false
@@ -40,3 +45,8 @@ jobs:
     uses: ./.github/workflows/R-CMD-check.yml
     with:
       error-on: ${{ inputs.r-cmd-check-error-on }}
+
+  docs-check:
+    if: ${{ inputs.do-docs-check }}
+    uses: ./.github/workflows/R-check-docs.yml
+
