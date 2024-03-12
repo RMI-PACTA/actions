@@ -58,13 +58,19 @@ jobs:
         run: |
           echo "$history_body" >> history.md
           cat history.md
-          history_json=$({grep "History JSON" history.md | grep -o '\[.*\]' || echo "[]"})
-          echo $history_json
-          echo $history_json >> history_json.json
-          echo $new_json >> new_json.json
+          history_line=$({ grep -n "History JSON" history.md || true;})
+          if [ -z "$history_line" ]; then
+            echo "History JSON not found"
+            history_json="[]"
+          else
+          history_json=$(echo "$history_line" | grep -o '\[.*\]')
+          fi
+          echo "$history_json"
+          echo "$history_json" >> history_json.json
+          echo "$new_json" >> new_json.json
           HISTORY_JSON=$(jq -sc 'flatten(1)' new_json.json history_json.json)
           echo "HISTORY_JSON=$HISTORY_JSON"
-          echo "HISTORY_JSON=$HISTORY_JSON" >> $GITHUB_ENV
+          echo "HISTORY_JSON=$HISTORY_JSON" >> "$GITHUB_ENV"
 
       - name: Create history markdown table
         uses: buildingcash/json-to-markdown-table-action@v1
