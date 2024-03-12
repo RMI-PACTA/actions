@@ -18,6 +18,11 @@ on:
         required: false
         default: true
         type: boolean
+      r-cmd-check-error-on:
+        description: 'Level of R CMD CHECK issue to fail check'
+        required: false
+        default: '"note"'
+        type: string
 
 
 jobs:
@@ -33,3 +38,5 @@ jobs:
   r-cmd-check:
     if: ${{ inputs.do-r-cmd-check }}
     uses: ./.github/workflows/R-CMD-check.yml
+    with:
+      error-on: ${{ inputs.r-cmd-check-error-on }}

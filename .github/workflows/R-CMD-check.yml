@@ -3,6 +3,12 @@ name: R-CMD-check
 
 on:
   workflow_call:
+    inputs:
+      error-on:
+        description: 'Level of R CMD CHECK issue to fail check'
+        required: false
+        default: '"note"'
+        type: string
 
 jobs:
   R-CMD-check:
@@ -42,4 +48,4 @@ jobs:
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
-          error-on: '"note"'
+          error-on: ${{ inputs.error-on }}
