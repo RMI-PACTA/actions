@@ -32,7 +32,9 @@ jobs:
       - name: show files
         run: |
           ls -lR working compare
+          echo "\nWORKING:\n"
           cat working/DESCRIPTION
+          echo "\nCOMPARE:\n"
           cat compare/DESCRIPTION
 
       - name: Setup R
