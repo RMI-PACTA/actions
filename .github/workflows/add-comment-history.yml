@@ -58,7 +58,7 @@ jobs:
         run: |
           echo "$history_body" >> history.md
           cat history.md
-          history_json=$(grep "History JSON" history.md | grep -o '\[.*\]')
+          history_json=$({grep "History JSON" history.md | grep -o '\[.*\]' || echo "[]"})
           echo $history_json
           echo $history_json >> history_json.json
           echo $new_json >> new_json.json
