@@ -31,7 +31,7 @@ jobs:
 
       - name: show files
         run: |
-          ls -laR working compare
+          ls -lR working compare
           cat working/DESCRIPTION
           cat compare/DESCRIPTION
 
