@@ -52,6 +52,3 @@ jobs:
             message("compare version: ", compare_version); \
             stopifnot(working_version > compare_version); \
           '
-
-
-          '
