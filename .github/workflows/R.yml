@@ -18,6 +18,11 @@ on:
         required: false
         default: true
         type: boolean
+      do-compare-versions:
+        description: 'Flag to compare versions in DESCRIPTION'
+        required: false
+        default: true
+        type: boolean
       r-cmd-check-error-on:
         description: 'Level of R CMD CHECK issue to fail check'
         required: false
@@ -40,3 +45,8 @@ jobs:
     uses: ./.github/workflows/R-CMD-check.yml
     with:
       error-on: ${{ inputs.r-cmd-check-error-on }}
+
+  version-check:
+    if: ${{ inputs.do-compare-versions }}
+    uses: ./.github/workflows/R-semver-check.yml
+
