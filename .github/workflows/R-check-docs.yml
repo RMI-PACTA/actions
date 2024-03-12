@@ -5,7 +5,7 @@ on:
 name: "Documentation check"
 
 jobs:
-  lint:
+  docs-check:
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ github.token }}
