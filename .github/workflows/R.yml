@@ -67,7 +67,7 @@ jobs:
       error-on: ${{ inputs.r-cmd-check-error-on }}
 
   version-check:
-    if: ${{ inputs.do-compare-versions && needs.check-R-updates.outputs.any_changed }}
+    if: ${{ inputs.do-compare-versions && needs.check-R-updates.outputs.any_changed == TRUE }}
     needs: [check-R-updates]
     uses: ./.github/workflows/R-semver-check.yml
 
