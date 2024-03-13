@@ -14,7 +14,7 @@ on:
         required: false
         type: string
         default: |
-          {"config": [
+          [
             {"os": "macOS-latest", "r": "release"},
             {"os": "windows-latest", "r": "release"},
             {"os": "windows-latest", "r": "3.6"},
@@ -25,7 +25,7 @@ on:
             {"os": "ubuntu-latest", "r": "oldrel-2"},
             {"os": "ubuntu-latest", "r": "oldrel-3"},
             {"os": "ubuntu-latest", "r": "oldrel-4"}
-          ]}
+          ]
 
 jobs:
   R-CMD-check:
@@ -34,7 +34,8 @@ jobs:
 
     strategy:
       fail-fast: false
-      matrix: ${{ fromJSON(inputs.r-cmd-check-matrix) }}
+      matrix:
+        config: ${{ fromJSON(inputs.r-cmd-check-matrix) }}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
