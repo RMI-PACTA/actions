@@ -46,10 +46,18 @@ jobs:
         with:
           fetch-depth: ${{ inputs.fetch-depth }}
 
-      - name: Get all changed R package files
+      - name: Get changed files
         id: changed-files
         uses: tj-actions/changed-files@v42
         with:
           base_sha: ${{ inputs.base_sha }}
           # Avoid using single or double quotes for multiline patterns
           files: ${{ inputs.files }}
+
+      - name: List all changed files
+        env:
+          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+        run: |
+          for file in ${ALL_CHANGED_FILES}; do
+            echo "$file was changed"
+          done
