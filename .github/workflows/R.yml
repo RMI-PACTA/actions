@@ -40,7 +40,7 @@ on:
         # Use 3.6 to trigger usage of RTools35
         # use 4.1 to check with rtools40's older compiler
         default: |
-          [
+          "config": [
             {"os": "macOS-latest",   "r": "release"},
             {"os": "windows-latest", "r": "release"},
             {"os": "windows-latest", "r": "3.6"},
