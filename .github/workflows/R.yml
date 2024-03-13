@@ -84,7 +84,7 @@ jobs:
     uses: ./.github/workflows/R-CMD-check.yml
     with:
       error-on: ${{ inputs.r-cmd-check-error-on }}
-      r-cmd-check-matrix: ${{ inputs.r-cmd-check-r-cmd-check-matrix }}
+      r-cmd-check-matrix: ${{ inputs.r-cmd-check-matrix }}
 
   version-check:
     if: ${{ inputs.do-compare-versions && needs.check-R-updates.outputs.any_changed == 'true' }}
