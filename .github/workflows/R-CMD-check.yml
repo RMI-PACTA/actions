@@ -9,6 +9,18 @@ on:
         required: false
         default: '"note"'
         type: string
+      r-cmd-check-matrix:
+        description: 'json matrix of OS and R versions to test R CMD CHECK'
+        required: false
+        type: string
+        default: |
+          [
+            {"os": "macOS-latest",   "r": "release"},
+            {"os": "windows-latest", "r": "release"},
+            {"os": "ubuntu-latest",  "r": "release"},
+            {"os": "ubuntu-latest",  "r": "devel", "http-user-agent": "release"},
+            {"os": "ubuntu-latest",  "r": "oldrel-1"}
+          ]
 
 jobs:
   R-CMD-check:
@@ -18,12 +30,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        config:
-          - {os: macOS-latest,   r: 'release'}
-          - {os: windows-latest, r: 'release'}
-          - {os: ubuntu-latest,  r: 'release'}
-          - {os: ubuntu-latest,  r: 'devel', http-user-agent: 'release'}
-          - {os: ubuntu-latest,  r: 'oldrel-1'}
+        config: ${{ fromJSON(inputs.r-cmd-check-matrix) }}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}

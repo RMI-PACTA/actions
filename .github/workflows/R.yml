@@ -33,6 +33,18 @@ on:
         required: false
         default: '"note"'
         type: string
+      r-cmd-check-matrix:
+        description: 'matrix of OS and R versions to test R CMD CHECK'
+        required: false
+        type: string
+        default: |
+          [
+            {"os": "macOS-latest",   "r": "release"},
+            {"os": "windows-latest", "r": "release"},
+            {"os": "ubuntu-latest",  "r": "release"},
+            {"os": "ubuntu-latest",  "r": "devel", "http-user-agent": "release"},
+            {"os": "ubuntu-latest",  "r": "oldrel-1"}
+          ]
 
 
 jobs:
@@ -65,6 +77,7 @@ jobs:
     uses: ./.github/workflows/R-CMD-check.yml
     with:
       error-on: ${{ inputs.r-cmd-check-error-on }}
+      r-cmd-check-matrix: ${{ inputs.r-cmd-check-r-cmd-check-matrix }}
 
   version-check:
     if: ${{ inputs.do-compare-versions && needs.check-R-updates.outputs.any_changed == 'true' }}
