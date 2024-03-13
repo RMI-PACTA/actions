@@ -56,8 +56,11 @@ jobs:
 
       - name: List all changed files
         env:
-          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+          ALL_MODIFIED_FILES: ${{ steps.changed-files.outputs.all_modified_files }}
+          ANY_CHANGED: ${{ steps.changed-files.outputs.any_changed }}
         run: |
-          for file in ${ALL_CHANGED_FILES}; do
-            echo "$file was changed"
+          echo "Any Changed: $ANY_CHANGED"
+          echo ""
+          for file in ${ALL_MODIFIED_FILES}; do
+            echo "$file was modified"
           done
