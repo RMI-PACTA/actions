@@ -37,6 +37,21 @@ on:
 
 jobs:
 
+  check-R-updates:
+    uses: ./.github/workflows/check-updated-files.yml
+    with:
+      files: |
+        **.R
+        DESCRIPTION
+        LICENSE
+        LICENSE.md
+        NAMESPACE
+        R/**
+        data/**
+        inst/**
+        src/**
+        vignettes/**
+
   lintr:
     if: ${{ inputs.do-lint }}
     uses: ./.github/workflows/R-lintr.yml
@@ -52,7 +67,8 @@ jobs:
       error-on: ${{ inputs.r-cmd-check-error-on }}
 
   version-check:
-    if: ${{ inputs.do-compare-versions }}
+    if: ${{ inputs.do-compare-versions && needs.check-R-updates.outputs.any_changed }}
+    needs: [check-R-updates]
     uses: ./.github/workflows/R-semver-check.yml
 
   docs-check:

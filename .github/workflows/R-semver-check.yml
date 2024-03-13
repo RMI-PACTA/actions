@@ -15,35 +15,6 @@ jobs:
 
     steps:
 
-      - name: Get all changed R package files
-        id: changed-package-files
-        uses: tj-actions/changed-files@v42
-        with:
-          base_sha: ${{ github.event.pull_request.base.sha }}
-          # Avoid using single or double quotes for multiline patterns
-          files: |
-             **.R
-             DESCRIPTION
-             LICENSE
-             LICENSE.md
-             NAMESPACE
-             R/**
-             data/**
-             inst/**
-             src/**
-             vignettes/**
-
-      - name: No changed R files
-        if: steps.changed-package-files.outputs.any_changed == 'true'
-        env:
-          ALL_CHANGED_FILES: ${{ steps.changed-package-files.outputs.all_changed_files }}
-        run: |
-          echo "No Changed R files."
-          echo "Files changed in this PR:"
-          for file in ${ALL_CHANGED_FILES}; do
-            echo "$file"
-          done
-
       - name: checkout working HEAD
         if: steps.changed-package-files.outputs.any_changed == 'false'
         uses: actions/checkout@v4
