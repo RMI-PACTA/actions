@@ -11,7 +11,7 @@ jobs:
     env:
       GITHUB_PAT: ${{ github.token }}
     permissions:
-      pull_request: read
+      pull-requests: read
 
     steps:
 
