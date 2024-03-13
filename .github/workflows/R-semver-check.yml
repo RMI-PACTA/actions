@@ -16,7 +16,6 @@ jobs:
     steps:
 
       - name: checkout working HEAD
-        if: steps.changed-package-files.outputs.any_changed == 'false'
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.ref }}
@@ -25,7 +24,6 @@ jobs:
           path: working
 
       - name: checkout base HEAD
-        if: steps.changed-package-files.outputs.any_changed == 'false'
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.base.ref }}
@@ -34,7 +32,6 @@ jobs:
           path: compare
 
       - name: show files
-        if: steps.changed-package-files.outputs.any_changed == 'false'
         run: |
           ls -lR working compare
           echo "\nWORKING:\n"
@@ -43,13 +40,11 @@ jobs:
           cat compare/DESCRIPTION
 
       - name: Setup R
-        if: steps.changed-package-files.outputs.any_changed == 'false'
         uses: r-lib/actions/setup-r@v2
         with:
           use-public-rspm: true
 
       - name: compare versions
-        if: steps.changed-package-files.outputs.any_changed == 'false'
         run: |
           Rscript -e " \
             install.packages('desc'); \
