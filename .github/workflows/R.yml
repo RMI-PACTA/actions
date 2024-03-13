@@ -18,6 +18,11 @@ on:
         required: false
         default: true
         type: boolean
+      do-compare-versions:
+        description: 'Flag to compare versions in DESCRIPTION'
+        required: false
+        default: true
+        type: boolean
       do-docs-check:
         description: 'Flag to check documentation is up to date'
         required: false
@@ -31,6 +36,21 @@ on:
 
 
 jobs:
+
+  check-R-updates:
+    uses: ./.github/workflows/check-updated-files.yml
+    with:
+      files: |
+        **.R
+        DESCRIPTION
+        LICENSE
+        LICENSE.md
+        NAMESPACE
+        R/**
+        data/**
+        inst/**
+        src/**
+        vignettes/**
 
   lintr:
     if: ${{ inputs.do-lint }}
@@ -46,7 +66,11 @@ jobs:
     with:
       error-on: ${{ inputs.r-cmd-check-error-on }}
 
+  version-check:
+    if: ${{ inputs.do-compare-versions && needs.check-R-updates.outputs.any_changed == 'true' }}
+    needs: [check-R-updates]
+    uses: ./.github/workflows/R-semver-check.yml
+
   docs-check:
     if: ${{ inputs.do-docs-check }}
     uses: ./.github/workflows/R-check-docs.yml
-
