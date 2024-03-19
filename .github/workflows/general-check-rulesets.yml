@@ -74,7 +74,7 @@ jobs:
           all_rulesets_json: ${{ steps.get-ruleset-contents.outputs.all-rulesets }}
         run: |
           ls -lR rulesets-check
-          ruleset_file=action_rulesets/.github/rulesets/main.json
+          ruleset_file=rulesets-check/rulesets/main.json
           cat $ruleset_file
           jq \
             --exit-status \
