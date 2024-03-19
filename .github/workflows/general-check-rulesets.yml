@@ -64,7 +64,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: '${{ inputs.rulesets-repo }}'
-          sparse-checkout: '${{ inputs.rulesets-files }}'
           path: 'rulesets-check'
 
       - name: Check for branch protection
