@@ -1,5 +1,5 @@
 {
-  "name": "main",
+  "name": "protect main",
   "target": "branch",
   "enforcement": "active",
   "conditions": {
@@ -24,10 +24,10 @@
     {
       "type": "pull_request",
       "parameters": {
-        "required_approving_review_count": 0,
-        "dismiss_stale_reviews_on_push": false,
+        "required_approving_review_count": 1,
+        "dismiss_stale_reviews_on_push": true,
         "require_code_owner_review": true,
-        "require_last_push_approval": false,
+        "require_last_push_approval": true,
         "required_review_thread_resolution": false
       }
     }
