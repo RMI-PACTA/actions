@@ -66,10 +66,12 @@ jobs:
           cat "all_rulesets.json"
           echo "all-rulesets=$(cat all_rulesets.json)" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/checkout@v4
+      - name: Checkout repo with rulesets
+        uses: actions/checkout@v4
         with:
           repository: '${{ inputs.rulesets-repo }}'
           path: 'rulesets-check'
+          sparse-checkout: '${{ inputs.rulesets-files }}'
           ref: '${{ inputs.rulesets-ref }}'
 
       - name: Check for rulesets
