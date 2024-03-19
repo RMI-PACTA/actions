@@ -1,5 +1,5 @@
 {
-  "name": "require-checks",
+  "name": "Require R Package Checks",
   "target": "branch",
   "enforcement": "active",
   "conditions": {
