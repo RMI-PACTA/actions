@@ -72,7 +72,7 @@ jobs:
           path: 'rulesets-check'
           ref: '${{ inputs.rulesets-ref }}'
 
-      - name: Check for branch protection
+      - name: Check for rulesets
         id: check-branch-protection
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
