@@ -1,0 +1,84 @@
+---
+name: R-CMD-check
+
+on:
+  workflow_call:
+    inputs:
+      rulesets-repo:
+        description: 'Repository containing ruleset definitions to check'
+        required: false
+        default: 'RMI-PACTA/actions'
+        type: string
+      rulesets-files:
+        description: 'Files with ruleset definitions to check'
+        required: false
+        type: string
+        default: |
+          rulesets/protect-main.json
+
+jobs:
+  evaluate-rulesets:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Enumerate rulesets
+        id: enumerate-rulesets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER_REPO: "${{ github.repository }}"
+        run: |
+          gh api \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            /repos/$OWNER_REPO/rulesets \
+            >> rulesets.json
+          cat rulesets.json
+          ruleset_ids=$(jq -c '[.[].id]' rulesets.json)
+          echo "ruleset-ids=$ruleset_ids"
+          echo "ruleset-ids=$ruleset_ids" >> "$GITHUB_OUTPUT"
+
+      - name: Get ruleset contents
+        id: get-ruleset-contents
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER_REPO: "${{ github.repository }}"
+          ruleset_ids_json: ${{ steps.enumerate-rulesets.outputs.ruleset-ids }}
+        run: |
+          ruleset_ids=$(echo $ruleset_ids_json | jq -rc '.[]')
+          mkdir rulesets
+          for ruleset in $ruleset_ids; do
+            echo ""
+            echo "Processing ruleset $ruleset"
+            gh api \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              /repos/$OWNER_REPO/rulesets/$ruleset \
+              >> "rulesets/$ruleset.json"
+            cat "rulesets/$ruleset.json"
+            echo ""
+          done
+          jq -s -c '.' rulesets/*.json >> all_rulesets.json
+          cat "all_rulesets.json"
+          echo "all-rulesets=$(cat all_rulesets.json)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v4
+        with:
+          repository: '${{ inputs.rulesets-repo }}'
+          sparse-checkout: '${{ inputs.rulesets-files }}'
+          path: 'rulesets-check'
+
+      - name: Check for branch protection
+        id: check-branch-protection
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER_REPO: "${{ github.repository }}"
+          all_rulesets_json: ${{ steps.get-ruleset-contents.outputs.all-rulesets }}
+        run: |
+          ls -lR rulesets-check
+          ruleset_file=action_rulesets/.github/rulesets/main.json
+          cat $ruleset_file
+          jq \
+            --exit-status \
+            --slurpfile ruleset_file $ruleset_file \
+            'map(contains($ruleset_file[0])) | any' \
+            <<< "$all_rulesets_json"
