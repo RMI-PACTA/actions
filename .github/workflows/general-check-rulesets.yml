@@ -15,6 +15,11 @@ on:
         type: string
         default: |
           rulesets/protect-main.json
+      ref:
+        description: 'ref for actions files'
+        required: false
+        type: string
+        default: ''
 
 jobs:
   evaluate-rulesets:
@@ -65,6 +70,7 @@ jobs:
         with:
           repository: '${{ inputs.rulesets-repo }}'
           path: 'rulesets-check'
+          ref: '${{ inputs.ref }}'
 
       - name: Check for branch protection
         id: check-branch-protection
