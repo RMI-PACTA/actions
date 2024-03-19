@@ -1,5 +1,5 @@
 ---
-name: R-CMD-check
+name: Check Rulesets
 
 on:
   workflow_call:
@@ -23,6 +23,7 @@ on:
 
 jobs:
   evaluate-rulesets:
+    name: Check Rulesets
     runs-on: ubuntu-latest
     steps:
 
