@@ -70,7 +70,7 @@ jobs:
         with:
           repository: '${{ inputs.rulesets-repo }}'
           path: 'rulesets-check'
-          ref: '${{ inputs.ref }}'
+          ref: '${{ inputs.rulesets-ref }}'
 
       - name: Check for branch protection
         id: check-branch-protection
