@@ -15,8 +15,8 @@ on:
         type: string
         default: |
           rulesets/protect-main.json
-      ref:
-        description: 'ref for actions files'
+      rulesets-ref:
+        description: 'ref for repo with ruleset definition files'
         required: false
         type: string
         default: ''
@@ -78,12 +78,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OWNER_REPO: "${{ github.repository }}"
           all_rulesets_json: ${{ steps.get-ruleset-contents.outputs.all-rulesets }}
+          ruleset_files: ${{ inputs.ruleset-files }}
         run: |
           ls -lR rulesets-check
-          ruleset_file=rulesets-check/rulesets/main.json
-          cat $ruleset_file
-          jq \
-            --exit-status \
-            --slurpfile ruleset_file $ruleset_file \
-            'map(contains($ruleset_file[0])) | any' \
-            <<< "$all_rulesets_json"
+          for ruleset in $ruleset_files; do
+            ruleset_file=rulesets-check/rulesets/main.json
+            cat $ruleset_file
+            jq \
+              --exit-status \
+              --slurpfile ruleset_file $ruleset_file \
+              'map(contains($ruleset_file[0])) | any' \
+              <<< "$all_rulesets_json"
+          done
