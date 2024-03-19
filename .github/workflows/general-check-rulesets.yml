@@ -78,11 +78,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OWNER_REPO: "${{ github.repository }}"
           all_rulesets_json: ${{ steps.get-ruleset-contents.outputs.all-rulesets }}
-          ruleset_files: ${{ inputs.ruleset-files }}
+          rulesets_files: ${{ inputs.rulesets-files }}
         run: |
           ls -lR rulesets-check
-          for ruleset in $ruleset_files; do
-            ruleset_file=rulesets-check/rulesets/main.json
+          for ruleset in $rulesets_files; do
+            ruleset_file=rulesets-check/$ruleset
             cat $ruleset_file
             jq \
               --exit-status \
