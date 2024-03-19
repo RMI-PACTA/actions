@@ -1,0 +1,55 @@
+{
+  "id": 539841,
+  "name": "require-checks",
+  "target": "branch",
+  "source_type": "Repository",
+  "source": "RMI-PACTA/demo_rulesets",
+  "enforcement": "active",
+  "conditions": {
+    "ref_name": {
+      "exclude": [],
+      "include": [
+        "~DEFAULT_BRANCH",
+        "refs/heads/main"
+      ]
+    }
+  },
+  "rules": [
+    {
+      "type": "non_fast_forward"
+    },
+    {
+      "type": "required_status_checks",
+      "parameters": {
+        "strict_required_status_checks_policy": true,
+        "required_status_checks": [
+          {
+            "context": "R Package Checks / docs-check / docs-check",
+            "integration_id": 15368
+          },
+          {
+            "context": "R Package Checks / lintr / lint",
+            "integration_id": 15368
+          },
+          {
+            "context": "R Package Checks / r-cmd-check / macOS-latest (release)",
+            "integration_id": 15368
+          },
+          {
+            "context": "R Package Checks / r-cmd-check / ubuntu-latest (release)",
+            "integration_id": 15368
+          },
+          {
+            "context": "R Package Checks / r-cmd-check / windows-latest (release)",
+            "integration_id": 15368
+          },
+          {
+            "context": "R Package Checks / codecov / test-coverage",
+            "integration_id": 15368
+          }
+        ]
+      }
+    }
+  ],
+  "bypass_actors": []
+}
