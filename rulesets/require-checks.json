@@ -36,7 +36,7 @@
             "context": "R Package Checks / r-cmd-check / windows-latest (release)"
           },
           {
-            "context": "R Package Checks / codecov / test-coverage"
+            "context": "R Package Checks / version-check / version-check"
           }
         ]
       }
