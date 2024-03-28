@@ -1,0 +1,45 @@
+{
+  "name": "Require R Package Checks",
+  "target": "branch",
+  "enforcement": "active",
+  "conditions": {
+    "ref_name": {
+      "exclude": [],
+      "include": [
+        "~DEFAULT_BRANCH",
+        "refs/heads/main"
+      ]
+    }
+  },
+  "rules": [
+    {
+      "type": "non_fast_forward"
+    },
+    {
+      "type": "required_status_checks",
+      "parameters": {
+        "strict_required_status_checks_policy": true,
+        "required_status_checks": [
+          {
+            "context": "R Package Checks / docs-check / docs-check"
+          },
+          {
+            "context": "R Package Checks / lintr / lint"
+          },
+          {
+            "context": "R Package Checks / r-cmd-check / macOS-latest (release)"
+          },
+          {
+            "context": "R Package Checks / r-cmd-check / ubuntu-latest (release)"
+          },
+          {
+            "context": "R Package Checks / r-cmd-check / windows-latest (release)"
+          },
+          {
+            "context": "R Package Checks / version-check / version-check"
+          }
+        ]
+      }
+    }
+  ]
+}
