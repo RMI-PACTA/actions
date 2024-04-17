@@ -14,6 +14,15 @@ on:
         required: false
         default: ${{ github.repository }}
         type: string
+      build-platform:
+        description: platforms to build docker image on
+        required: false
+        type: string
+        default: |
+          [
+            "linux/amd64"
+            "linux/arm64"
+          ]
       do-lint:
         description: 'Flag to lint Dockerfile'
         required: false
@@ -45,6 +54,7 @@ jobs:
     secrets: inherit
     with:
       image-name: ${{ inputs.image-name }}
+      build-platform: ${{ inputs.build-platform }}
 
   check-r-sysdeps:
     if: ${{ inputs.do-check-r-sysdeps }}
