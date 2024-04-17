@@ -20,6 +20,15 @@ on:
         description: Additional tags to tag image with
         required: false
         type: string
+      build-platform:
+        description: platforms to build docker image on
+        required: false
+        type: string
+        default: |
+          [
+            "linux/amd64"
+            "linux/arm64"
+          ]
     outputs:
       full-image-name:
         description: "Full pushed image name including host/registry, name, and tag"
@@ -33,9 +42,7 @@ jobs:
       fail-fast: true
       # build amd64 and arm64 in parallel
       matrix:
-        platform:
-          - linux/amd64
-          - linux/arm64
+        platform: ${{ inputs.build-platform }}
     # write to packages (ghcr.io)
     permissions:
       packages: write
