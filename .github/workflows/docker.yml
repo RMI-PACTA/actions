@@ -38,6 +38,10 @@ on:
         required: false
         default: true
         type: boolean
+    outputs:
+      full-image-name:
+        description: "Full pushed image name including host/registry, name, and tag"
+        value: ${{ jobs.build-docker-image.outputs.full-image-name }}
 
 
 jobs:
