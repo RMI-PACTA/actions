@@ -42,7 +42,7 @@ jobs:
       fail-fast: true
       # build amd64 and arm64 in parallel
       matrix:
-        platform: ${{ inputs.build-platform }}
+        platform: ${{ fromJSON(inputs.build-platform) }}
     # write to packages (ghcr.io)
     permissions:
       packages: write
