@@ -17,7 +17,7 @@ jobs:
     if: ${{ (!github.event.issue.pull_request) && (github.event.label.name == 'ADO' )}}
     runs-on: ubuntu-latest
     steps:
-      - uses: danhellem/github-actions-issue-to-work-item@v2.2
+      - uses: danhellem/github-actions-issue-to-work-item@v2.3
         id: gh_to_ado
         env:
           ado_token: "${{ secrets.ADO_TOKEN }}" 
