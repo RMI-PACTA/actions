@@ -4,7 +4,7 @@ on:
       ado_area_path:
         description: "ADO area path where ADO tickets are created."
         required: true
-        default: "2DegreesInvesting\\Test Team 1"
+        default: "2DegreesInvesting\\GitHub Issues"
         type: string
     secrets:
       ADO_TOKEN:
