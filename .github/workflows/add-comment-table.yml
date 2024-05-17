@@ -33,11 +33,17 @@ jobs:
           echo "merged-json=$MERGED_JSON"
           echo "merged-json=$MERGED_JSON" >> "$GITHUB_OUTPUT"
 
+      - name: Echo JSON
+        env:
+          MERGED-JSON: ${{ steps.json-merge.output.merged-json }}
+        run: |
+          echo "$MERGED_JSON" | jq '.'
+
       - name: Create markdown table
         uses: buildingcash/json-to-markdown-table-action@v1
         id: table
         with:
-          json: "${{ steps.json-merge.output.merged-json }}"
+          json: ${{ steps.json-merge.output.merged-json }}
       - run: echo "${{ steps.table.outputs.table }}"
 
       - name: Find Comment
