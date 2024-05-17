@@ -39,11 +39,36 @@ jobs:
         run: |
           echo "$MERGED_JSON" | jq '.'
 
-      - name: Create markdown table
-        uses: buildingcash/json-to-markdown-table-action@v1
+      - name: Convert JSON to markdown table
         id: table
-        with:
-          json: ${{ steps.json-merge.outputs.merged-json }}
+        env:
+          MERGED_JSON: ${{ steps.json-merge.outputs.merged-json }}
+        run: |
+          MARKDOWN_TABLE="$(
+            echo "$MERGED_JSON" |
+            jq  --raw-output '
+              (
+                [(.[] | keys_unsorted)] |
+                flatten |
+                map({(.):1})|add|keys_unsorted
+              ) as $k |
+              (
+                [.[] | [.[$k[]]] | join(" | ")]
+              ) as $table |
+              [
+                ($k | join(" | ")),
+                ($k | reduce .[] as $item ({}; .[$item] = "---") | join(" | ")),
+                $table
+              ] |
+                flatten |
+                .[] |
+                "| " + . + " |"
+            '
+          )"
+          echo 'table=<<EOF' >> $GITHUB_OUTPUT
+          echo "$MARKDOWN_TABLE" >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
+          echo "$MARKDOWN_TABLE"
 
       - name: Echo table
         env:
