@@ -12,8 +12,6 @@ on:
         required: true
         type: string
 
-
-
 jobs:
   add_comment:
     if: ${{ github.event_name == 'pull_request' }}
@@ -31,15 +29,15 @@ jobs:
         id: json-merge
         run: |
           ls -laR /tmp/comment-json
-          NEW_JSON=$(jq -sc '.' /tmp/comment-json/*.json)
-          echo "NEW_JSON=$NEW_JSON"
-          echo "NEW_JSON=$NEW_JSON" >> $GITHUB_ENV
+          MERGED_JSON=$(jq -sc '.' /tmp/comment-json/*.json)
+          echo "merged-json=$MERGED_JSON"
+          echo "merged-json=$MERGED_JSON" >> "$GITHUB_OUTPUT"
 
       - name: Create markdown table
         uses: buildingcash/json-to-markdown-table-action@v1
         id: table
         with:
-          json: "${{ env.NEW_JSON }}"
+          json: "${{ steps.json-merge.output.merged-json }}"
       - run: echo "${{ steps.table.outputs.table }}"
 
       - name: Find Comment
@@ -51,34 +49,6 @@ jobs:
           comment-author: 'github-actions[bot]'
           body-includes: ${{ inputs.header }}
 
-      - name: Extract old JSON
-        env:
-          history_body: ${{ steps.fc.outputs.comment-body }}
-          new_json: ${{ env.NEW_JSON }}
-        run: |
-          echo "$history_body" >> history.md
-          cat history.md
-          history_line=$({ grep -n "History JSON" history.md || true;})
-          if [ -z "$history_line" ]; then
-            echo "History JSON not found"
-            history_json="[]"
-          else
-          history_json=$(echo "$history_line" | grep -o '\[.*\]')
-          fi
-          echo "$history_json"
-          echo "$history_json" >> history_json.json
-          echo "$new_json" >> new_json.json
-          HISTORY_JSON=$(jq -sc 'flatten(1)' new_json.json history_json.json)
-          echo "HISTORY_JSON=$HISTORY_JSON"
-          echo "HISTORY_JSON=$HISTORY_JSON" >> "$GITHUB_ENV"
-
-      - name: Create history markdown table
-        uses: buildingcash/json-to-markdown-table-action@v1
-        id: table-history
-        with:
-          json: "${{ env.HISTORY_JSON }}"
-      - run: echo "${{ steps.table-history.outputs.table }}"
-
       - name: Create or update comment
         # https://github.com/peter-evans/create-or-update-comment
         uses: peter-evans/create-or-update-comment@v4
@@ -88,11 +58,4 @@ jobs:
           body: |
             # ${{ inputs.header }}
             ${{ steps.table.outputs.table }}
-            <details>
-              <summary>History</summary>
-
-              ${{ steps.table-history.outputs.table }}
-
-              <details><summary>History JSON</summary>`${{ env.HISTORY_JSON }}`</details>
-            </details>
           edit-mode: replace
