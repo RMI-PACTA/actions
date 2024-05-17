@@ -65,7 +65,7 @@ jobs:
                 "| " + . + " |"
             '
           )"
-          echo 'table=<<EOF' >> $GITHUB_OUTPUT
+          echo 'table<<EOF' >> $GITHUB_OUTPUT
           echo "$MARKDOWN_TABLE" >> $GITHUB_OUTPUT
           echo 'EOF' >> $GITHUB_OUTPUT
           echo "$MARKDOWN_TABLE"
