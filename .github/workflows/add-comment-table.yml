@@ -35,7 +35,7 @@ jobs:
 
       - name: Echo JSON
         env:
-          MERGED-JSON: ${{ steps.json-merge.output.merged-json }}
+          MERGED-JSON: ${{ steps.json-merge.outputs.merged-json }}
         run: |
           echo "$MERGED_JSON" | jq '.'
 
@@ -43,8 +43,12 @@ jobs:
         uses: buildingcash/json-to-markdown-table-action@v1
         id: table
         with:
-          json: ${{ steps.json-merge.output.merged-json }}
-      - run: echo "${{ steps.table.outputs.table }}"
+          json: ${{ steps.json-merge.outputs.merged-json }}
+
+      - name: Echo table
+        env:
+          TABLE: ${{ steps.table.outputs.table }}
+        run: echo "$TABLE"
 
       - name: Find Comment
         # https://github.com/peter-evans/find-comment
