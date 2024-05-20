@@ -1,0 +1,96 @@
+---
+on:
+  workflow_call:
+    inputs:
+      artifact-prefix:
+        description: "prefix for artifacts containing JSON to be included in comment"
+        type: string
+        required: false
+        default: "comment-json-"
+      header:
+        description: 'Header text for comment'
+        required: true
+        type: string
+
+jobs:
+  add_comment:
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read new JSON
+        id: json-read
+        uses: actions/download-artifact@v4
+        with:
+          path: /tmp/comment-json
+          pattern: ${{ inputs.artifact-prefix }}*
+          merge-multiple: true
+
+      - name: Merge new JSON
+        id: json-merge
+        run: |
+          ls -laR /tmp/comment-json
+          MERGED_JSON=$(jq -sc '.' /tmp/comment-json/*.json)
+          echo "merged-json=$MERGED_JSON"
+          echo "merged-json=$MERGED_JSON" >> "$GITHUB_OUTPUT"
+
+      - name: Echo JSON
+        env:
+          MERGED-JSON: ${{ steps.json-merge.outputs.merged-json }}
+        run: |
+          echo "$MERGED_JSON" | jq '.'
+
+      - name: Convert JSON to markdown table
+        id: table
+        env:
+          MERGED_JSON: ${{ steps.json-merge.outputs.merged-json }}
+        run: |
+          MARKDOWN_TABLE="$(
+            echo "$MERGED_JSON" |
+            jq  --raw-output '
+              (
+                [(.[] | keys_unsorted)] |
+                flatten |
+                map({(.):1})|add|keys_unsorted
+              ) as $k |
+              (
+                [.[] | [.[$k[]]] | join(" | ")]
+              ) as $table |
+              [
+                ($k | join(" | ")),
+                ($k | reduce .[] as $item ({}; .[$item] = "---") | join(" | ")),
+                $table
+              ] |
+                flatten |
+                .[] |
+                "| " + . + " |"
+            '
+          )"
+          echo 'table<<EOF' >> $GITHUB_OUTPUT
+          echo "$MARKDOWN_TABLE" >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
+          echo "$MARKDOWN_TABLE"
+
+      - name: Echo table
+        env:
+          TABLE: ${{ steps.table.outputs.table }}
+        run: echo "$TABLE"
+
+      - name: Find Comment
+        # https://github.com/peter-evans/find-comment
+        uses: peter-evans/find-comment@v3
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: ${{ inputs.header }}
+
+      - name: Create or update comment
+        # https://github.com/peter-evans/create-or-update-comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            # ${{ inputs.header }}
+            ${{ steps.table.outputs.table }}
+          edit-mode: replace
