@@ -19,10 +19,13 @@ on:
         required: false
         type: string
         default: |
+        ${{
+          github.event_name == 'pull_request' && ["linux/amd64"] ||
           [
             "linux/amd64",
             "linux/arm64"
           ]
+        }}
       do-lint:
         description: 'Flag to lint Dockerfile'
         required: false
