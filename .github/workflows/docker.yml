@@ -20,7 +20,7 @@ on:
         type: string
         default: |
           ${{
-            github.event_name == 'pull_request' && ["linux/amd64"] ||
+            github.event_name == 'pull_request' && '["linux/amd64"]' ||
             [
               "linux/amd64",
               "linux/arm64"
