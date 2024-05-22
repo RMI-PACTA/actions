@@ -78,6 +78,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Identify Version
+        id: identify-version
+        env:
+          GH_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          IMAGE_NAME: ${{ inputs.image-name }}
+        run: |
+          if [ -f "DESCRIPTION" ]; then
+            echo "Finding Version String"
+            VERSION_STRING="$(
+              grep "^Version:\s\+" "DESCRIPTION" |
+                sed 's/^Version:[ \t]*//'
+            )"
+          fi
+          VERSION_STRING="${VERSION_STRING:-$GH_SHA}"
+          echo "version-string=$VERSION_STRING"
+          echo "version-string=$VERSION_STRING" >> "$GITHUB_OUTPUT"
+          REF_NAME="${IMAGE_NAME}:${VERSION_STRING}"
+          echo "ref-name=$REF_NAME"
+          echo "ref-name=$REF_NAME" >> "$GITHUB_OUTPUT"
+
       # Extract the LABEL lines in the dockerfile, and extract their contents.
       # write to both env and as an output to be used in merge job. This will
       # let us use the LABELs defined there as the labels for our image. Note
@@ -100,12 +120,19 @@ jobs:
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
+        env:
+          VERSION_STRING: ${{ steps.identify-version.outputs.version-string }}
+          REF_NAME: ${{ steps.identify-version.outputs.ref-name }}
         with:
           images: ${{ env.REGISTRY_IMAGE }}
           annotations:
             ${{ env.DOCKERFILE_LABELS }}
+            org.opencontainers.image.ref.name="$REF_NAME"
+            org.opencontainers.image.version="$VERSION_STRING"
           labels:
             ${{ env.DOCKERFILE_LABELS }}
+            org.opencontainers.image.ref.name="$REF_NAME"
+            org.opencontainers.image.version="$VERSION_STRING"
 
       # set up our build environment
       - name: Set up QEMU
