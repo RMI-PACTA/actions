@@ -116,8 +116,8 @@ jobs:
           echo "org.opencontainers.image.version=$VERSION_STRING"
           echo 'dockerfile-labels<<EOF' >> $GITHUB_OUTPUT
           echo "$DOCKERFILE_LABELS" >> $GITHUB_OUTPUT
-          echo "org.opencontainers.image.ref.name=$REF_NAME"
-          echo "org.opencontainers.image.version=$VERSION_STRING"
+          echo "org.opencontainers.image.ref.name=$REF_NAME" >> "$GITHUB_OUTPUT"
+          echo "org.opencontainers.image.version=$VERSION_STRING" >> "$GITHUB_OUTPUT"
           echo 'EOF' >> $GITHUB_OUTPUT
 
       # Setup docker metadata, including tags and labels (and annotations)
