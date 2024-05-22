@@ -110,14 +110,13 @@ jobs:
           VERSION_STRING: ${{ steps.identify-version.outputs.version-string }}
           REF_NAME: ${{ steps.identify-version.outputs.ref-name }}
         run: |
-          DOCKERFILE_LABELS="$(grep "^LABEL" Dockerfile | sed 's/^LABEL[[:space:]]*//')"
+          grep "^LABEL" Dockerfile | sed 's/^LABEL[[:space:]]*//' > dockerlabels.txt
+          echo "org.opencontainers.image.ref.name=$REF_NAME" >> dockerlabels.txt
+          echo "org.opencontainers.image.version=$VERSION_STRING" >> dockerlabels.txt
+          DOCKERFILE_LABELS="$(cat dockerlabels.txt)"
           echo "$DOCKERFILE_LABELS"
-          echo "org.opencontainers.image.ref.name=$REF_NAME"
-          echo "org.opencontainers.image.version=$VERSION_STRING"
           echo 'dockerfile-labels<<EOF' >> $GITHUB_OUTPUT
           echo "$DOCKERFILE_LABELS" >> $GITHUB_OUTPUT
-          echo "org.opencontainers.image.ref.name=$REF_NAME" >> "$GITHUB_OUTPUT"
-          echo "org.opencontainers.image.version=$VERSION_STRING" >> "$GITHUB_OUTPUT"
           echo 'EOF' >> $GITHUB_OUTPUT
 
       - name: Preview LABELS
