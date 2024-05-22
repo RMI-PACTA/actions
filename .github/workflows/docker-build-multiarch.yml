@@ -120,6 +120,11 @@ jobs:
           echo "org.opencontainers.image.version=$VERSION_STRING" >> "$GITHUB_OUTPUT"
           echo 'EOF' >> $GITHUB_OUTPUT
 
+      - name: Preview LABELS
+        env:
+          DOCKERFILE_LABELS: ${{ steps.custom-labels.outputs.DOCKERFILE_LABELS }}
+        run: echo "$DOCKERFILE_LABELS"
+
       # Setup docker metadata, including tags and labels (and annotations)
       - name: Docker meta
         id: meta
