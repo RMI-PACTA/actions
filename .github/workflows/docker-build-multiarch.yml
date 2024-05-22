@@ -121,7 +121,7 @@ jobs:
 
       - name: Preview LABELS
         env:
-          DOCKERFILE_LABELS: ${{ steps.custom-labels.outputs.DOCKERFILE_LABELS }}
+          DOCKERFILE_LABELS: ${{ steps.custom-labels.outputs.dockerfile-labels }}
         run: echo "$DOCKERFILE_LABELS"
 
       # Setup docker metadata, including tags and labels (and annotations)
@@ -131,9 +131,9 @@ jobs:
         with:
           images: ${{ env.REGISTRY_IMAGE }}
           annotations:
-            ${{ steps.custom-labels.outputs.DOCKERFILE_LABELS }}
+            ${{ steps.custom-labels.outputs.dockerfile-labels }}
           labels:
-            ${{ steps.custom-labels.outputs.DOCKERFILE_LABELS }}
+            ${{ steps.custom-labels.outputs.dockerfile-labels }}
 
       # set up our build environment
       - name: Set up QEMU
