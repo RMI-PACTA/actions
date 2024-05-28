@@ -3,10 +3,10 @@
 on:
   workflow_call:
 
-name: lint
+name: deps-main
 
 jobs:
-  lint:
+  deps-main:
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ github.token }}
