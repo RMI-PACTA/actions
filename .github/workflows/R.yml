@@ -28,6 +28,11 @@ on:
         required: false
         default: true
         type: boolean
+      do-deps-main-check:
+        description: 'Flag to check dependencies point to default'
+        required: false
+        default: true
+        type: boolean
       r-cmd-check-error-on:
         description: 'Level of R CMD CHECK issue to fail check'
         required: false
@@ -94,3 +99,7 @@ jobs:
   docs-check:
     if: ${{ inputs.do-docs-check }}
     uses: ./.github/workflows/R-check-docs.yml
+
+  deps-main-check:
+    if: ${{ inputs.do-deps-main-check }}
+    uses: ./.github/workflows/R-dep-main-check.yml
