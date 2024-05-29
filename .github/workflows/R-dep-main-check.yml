@@ -1,0 +1,33 @@
+# Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
+# Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
+on:
+  workflow_call:
+
+name: deps-main
+
+jobs:
+  deps-main:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::pak, local::.
+
+      - name: Check R dependencies
+        run: |
+          deps <- pak::local_deps()
+          refs <- deps[["ref"]]
+          non_default <- refs[grepl(x = refs, pattern = "@", fixed = TRUE)]
+          if (length(non_default)) {
+            print(non_default)
+            stop("Non default references found in dependencies.")
+          }
+        shell: Rscript {0}
