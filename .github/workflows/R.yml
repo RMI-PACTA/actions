@@ -42,13 +42,11 @@ on:
         description: 'matrix of OS and R versions to test R CMD CHECK'
         required: false
         type: string
-        # Use 3.6 to trigger usage of RTools35
         # use 4.1 to check with rtools40's older compiler
         default: |
           [
             {"os": "macOS-latest", "r": "release"},
             {"os": "windows-latest", "r": "release"},
-            {"os": "windows-latest", "r": "3.6"},
             {"os": "windows-latest", "r": "4.1"},
             {"os": "ubuntu-latest", "r": "release"},
             {"os": "ubuntu-latest", "r": "devel", "http-user-agent": "release"},
