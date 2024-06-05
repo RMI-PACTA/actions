@@ -25,6 +25,11 @@ on:
             {"os": "ubuntu-latest", "r": "oldrel-3"},
             {"os": "ubuntu-latest", "r": "oldrel-4"}
           ]
+      extra-repositories:
+        description: 'One or more extra CRAN-like repositories to include in the repos global option'
+        required: false
+        default: ''
+        type: string
 
 jobs:
   R-CMD-check:
@@ -50,6 +55,7 @@ jobs:
           r-version: ${{ matrix.config.r }}
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
+          extra-repositories: ${{ inputs.extra-repositories }}
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
