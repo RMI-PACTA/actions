@@ -66,4 +66,4 @@ jobs:
         with:
           upload-snapshots: true
           error-on: ${{ inputs.error-on }}
-          snapshot-artifact-name: ${{ format('{0}-{1}-r{2}-{3}-testthat-snapshots-{4}-{5}', runner.os, runner.arch, matrix.config.r, matrix.config.id, github.run_id, github.run_attempt }}
+          snapshot-artifact-name: ${{ format('{0}-{1}-r{2}-{3}-testthat-snapshots-{4}-{5}', runner.os, runner.arch, matrix.config.r, matrix.config.id, github.run_id, github.run_attempt) }}
