@@ -84,6 +84,7 @@ jobs:
             options(repos = r)
           })
           EOF
+          Rscript -e 'getOption("repos")'
         shell: bash
 
       - uses: r-lib/actions/setup-r-dependencies@v2
