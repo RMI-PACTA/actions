@@ -30,7 +30,7 @@ on:
         required: false
         default: ''
         type: string
-      prepend-repositories:
+      PRepend-repositories:
         description: 'One or more extra CRAN-like repositories to have priority over the default repos global option'
         required: false
         default: ''
@@ -67,7 +67,7 @@ jobs:
         env:
           PREPEND_REPOS: ${{ inputs.prepend-repositories }}
         run: |
-          cat <<EOF >>   "~/.Rprofile"
+          cat <<EOF >> ~/.Rprofile
           local({
             prepend <- unlist(strsplit(x = Sys.getenv("PREPEND_REPOS"), split = ",", fixed = TRUE))
             r <- append(getOption("repos"), prepend, after = 0L)
