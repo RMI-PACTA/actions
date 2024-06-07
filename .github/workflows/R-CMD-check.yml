@@ -40,6 +40,11 @@ on:
         required: false
         default: 'FALSE'
         type: string
+      cache-version:
+        description: 'passed to setup-r-dependencies cache-version'
+        required: false
+        default: 1
+        type: string
 
 jobs:
   R-CMD-check:
@@ -86,6 +91,7 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
           upgrade: ${{ inputs.upgrade-packages }}
+          cache-version: ${{ inputs.cache-version }}
 
       - uses: r-lib/actions/check-r-package@v2
         with:
