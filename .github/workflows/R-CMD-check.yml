@@ -30,6 +30,11 @@ on:
         required: false
         default: ''
         type: string
+      prepend-repositories:
+        description: 'One or more extra CRAN-like repositories to have priority over the default repos global option'
+        required: false
+        default: ''
+        type: string
 
 jobs:
   R-CMD-check:
@@ -56,6 +61,19 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
           extra-repositories: ${{ inputs.extra-repositories }}
+
+      - name: Prepend repositories
+        if: ${{ inputs.prepend-repositories }}
+        env:
+          PREPEND_REPOS: ${{ inputs.prepend-repositories }}
+        run: |
+          cat <<EOF >>   "~/.Rprofile"
+          local({
+            prepend <- unlist(strsplit(x = Sys.getenv("PREPEND_REPOS"), split = ",", fixed = TRUE))
+            r <- append(getOption("repos"), prepend, after = 0L)
+            options(repos = r)
+          })
+          EOF
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
