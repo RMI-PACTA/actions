@@ -43,7 +43,7 @@ on:
       remotes:
         description: 'entires to add as a Remotes field in DESCRIPTION'
         required: false
-        default: 1
+        default: ''
         type: string
 
 jobs:
