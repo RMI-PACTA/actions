@@ -30,10 +30,15 @@ on:
         required: false
         default: ''
         type: string
-      PRepend-repositories:
+      prepend-repositories:
         description: 'One or more extra CRAN-like repositories to have priority over the default repos global option'
         required: false
         default: ''
+        type: string
+      upgrade-packages:
+        description: 'passed to setup-r-dependencies upgrade'
+        required: false
+        default: 'FALSE'
         type: string
 
 jobs:
@@ -79,6 +84,7 @@ jobs:
         with:
           extra-packages: any::rcmdcheck
           needs: check
+          upgrade: ${{ inputs.upgrade-packages }}
 
       - uses: r-lib/actions/check-r-package@v2
         with:
