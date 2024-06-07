@@ -25,6 +25,26 @@ on:
             {"os": "ubuntu-latest", "r": "oldrel-3"},
             {"os": "ubuntu-latest", "r": "oldrel-4"}
           ]
+      extra-repositories:
+        description: 'One or more extra CRAN-like repositories to include in the repos global option'
+        required: false
+        default: ''
+        type: string
+      upgrade-packages:
+        description: 'passed to setup-r-dependencies upgrade'
+        required: false
+        default: 'FALSE'
+        type: string
+      cache-version:
+        description: 'passed to setup-r-dependencies cache-version'
+        required: false
+        default: 1
+        type: string
+      remotes:
+        description: 'entires to add as a Remotes field in DESCRIPTION'
+        required: false
+        default: 1
+        type: string
 
 jobs:
   R-CMD-check:
@@ -50,13 +70,29 @@ jobs:
           r-version: ${{ matrix.config.r }}
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
+          extra-repositories: ${{ inputs.extra-repositories }}
+
+      - name: Add Remotes
+        if: ${{ inputs.remotes }}
+        env:
+          REMOTES: ${{ inputs.remotes }}
+        run: |
+          cat <<EOF >> DESCRIPTION
+          Remotes:
+            $REMOTES
+          EOF
+          cat DESCRIPTION
+        shell: bash
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
           needs: check
+          upgrade: ${{ inputs.upgrade-packages }}
+          cache-version: ${{ inputs.cache-version }}
 
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
           error-on: ${{ inputs.error-on }}
+          snapshot-artifact-name: ${{ format('{0}-{1}-r{2}-{3}-testthat-snapshots-{4}-{5}', runner.os, runner.arch, matrix.config.r, matrix.config.id, github.run_id, github.run_attempt) }}
