@@ -77,9 +77,16 @@ jobs:
         env:
           REMOTES: ${{ inputs.remotes }}
         run: |
+          REMOTES_CLEAN="$( \
+            echo $REMOTES \
+            | tr -d ',' \
+            | awk '{print "  " $0}' \
+            | sed '$!s/$/,/'
+            )"
+          echo $REMOTES_CLEAN
           cat <<EOF >> DESCRIPTION
           Remotes:
-            $REMOTES
+          $REMOTES_CLEAN
           EOF
           cat DESCRIPTION
         shell: bash
