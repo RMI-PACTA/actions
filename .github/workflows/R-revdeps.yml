@@ -39,7 +39,7 @@ jobs:
           http-user-agent: release
           use-public-rspm: true
 
-      - name: Download Reverse Dependency
+      - name: Download and unpack Reverse Dependency
         id: download-revdep
         env:
           REVDEP: ${{ matrix.config.pkg }}
