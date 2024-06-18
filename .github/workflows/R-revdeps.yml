@@ -67,18 +67,26 @@ jobs:
           } else {
             stop("No valid downloads found.")
           }
-          untar(
-            tarfile = target_tar,
-            exdir = dl[["package"]][[1L]]
-          )
+          cat(
+            paste0("revdep-file=", target_tar, "\n"),
+            file = Sys.getenv("GITHUB_OUTPUT"),
+            append = TRUE
           cat(
             paste0("revdep-pkg=", dl[["package"]][[1L]], "\n"),
             file = Sys.getenv("GITHUB_OUTPUT"),
             append = TRUE
           )
 
-      - name: inpsect
-        run: ls -laR
+      - name: Unpack revdep
+        env:
+          DESTINATION: ${{ steps.download-revdep.outputs.revdep-pkg }}
+          REVDEP_FILE: ${{ steps.download-revdep.outputs.revdep-file }}
+        run: |
+          BEFORE=$(find . -maxdepth 1 -type d)
+          tar -xv -f "$REVDEP_FILE"
+          AFTER=$(find . -maxdepth 1 -type d)
+          NEW_DIRS=$(comm -13 <(echo "$before") <(echo "$after"))
+          echo "revdep-dir=$NEW_DIRS" >> "$GITHUB_OUTPUT"
 
       - name: Install revdep dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
@@ -87,7 +95,7 @@ jobs:
           needs: check
           upgrade: 'TRUE'
           dependencies: '"all"'
-          working-directory: ${{ steps.download-revdep.outputs.revdep-pkg }}
+          working-directory: ${{ steps.download-revdep.outputs.revdep-dir }}
           cache-version: ${{ matrix.config.pkg }}
 
       - name: Install local HEAD
@@ -102,4 +110,4 @@ jobs:
       - uses: r-lib/actions/check-r-package@v2
         name: Check reverse dependency
         with:
-          working-directory: ${{ steps.download-revdep.outputs.revdep-pkg }}
+          working-directory: ${{ steps.download-revdep.outputs.revdep-dir }}
