@@ -4,16 +4,6 @@ name: R Reverse Dependency Check
 on:
   workflow_call:
     inputs:
-      focus-package:
-        description: 'Package for which reverse dependency should be checked'
-        required: true
-        default: '"note"'
-        type: string
-      upgrade-packages:
-        description: 'passed to setup-r-dependencies upgrade'
-        required: false
-        default: 'TRUE'
-        type: string
       revdeps:
         description: 'Reverse dependency to check. Accepts {pak} specifications as JSON string'
         required: false
@@ -48,7 +38,6 @@ jobs:
           r-version: ${{ matrix.config.r }}
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
-          extra-repositories: ${{ inputs.extra-repositories }}
 
       - name: Download Reverse Dependency
         id: download-revdep
@@ -101,6 +90,3 @@ jobs:
         name: Check reverse dependency
         with:
           working-directory: ${{ steps.download-revdep.outputs.revdep-pkg }}
-          upload-snapshots: true
-          error-on: ${{ inputs.error-on }}
-          snapshot-artifact-name: ${{ format('{0}-{1}-r{2}-{3}-testthat-snapshots-{4}', runner.os, runner.arch, matrix.config.r, matrix.config.id, inputs.cache-version) }}
