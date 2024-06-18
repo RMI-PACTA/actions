@@ -33,6 +33,16 @@ on:
         required: false
         default: true
         type: boolean
+      do-revdeps-check:
+        description: 'Flag to run rcmdcheck on reverse dependencies. See revdeps input.'
+        required: false
+        default: true
+        type: boolean
+      revdeps:
+        description: 'JSON array of reverse dependencies, ex. [{"pkg": "r2dii.match"}, {"pkg": "RMI-PACTA/r2dii.match"}]'
+        required: false
+        default: '[]'
+        type: string
       r-cmd-check-error-on:
         description: 'Level of R CMD CHECK issue to fail check'
         required: false
@@ -101,3 +111,9 @@ jobs:
   deps-main-check:
     if: ${{ inputs.do-deps-main-check }}
     uses: ./.github/workflows/R-dep-main-check.yml
+
+  revdeps-check:
+    if: ${{ inputs.do-revdeps-check && inputs.revdeps }}
+    uses: ./.github/workflows/R-revdeps.yml
+    with:
+      revdeps: ${{ inputs.revdeps }}
