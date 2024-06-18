@@ -101,7 +101,7 @@ jobs:
           cat .dirs_before
 
           if [ "$REVDEP_TYPE" = "github" ]; then
-            unzip "$REVDEP_FILE"
+            unzip -q "$REVDEP_FILE"
           else
             tar -x -f "$REVDEP_FILE"
           fi
