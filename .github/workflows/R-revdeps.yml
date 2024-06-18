@@ -78,7 +78,6 @@ jobs:
 
       - name: Install local HEAD
         id: install-package
-        env:
         shell: Rscript {0}
         run: |
           dl <- pak::local_install(
