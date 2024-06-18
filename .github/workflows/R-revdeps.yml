@@ -77,10 +77,16 @@ jobs:
             file = Sys.getenv("GITHUB_OUTPUT"),
             append = TRUE
           )
+          cat(
+            paste0("revdep-type=", dl[["type"]][[1L]], "\n"),
+            file = Sys.getenv("GITHUB_OUTPUT"),
+            append = TRUE
+          )
 
       - name: Unpack revdep
         env:
           REVDEP_FILE: ${{ steps.download-revdep.outputs.revdep-file }}
+          REVDEP_TYPE: ${{ steps.download-revdep.outputs.revdep-type }}
         run: |
           if [ "$(expr "$string" : '.*-t$')" -ne 0 ]; then
             newname="(echo $REVDEP_FILE | sed 's/-t$//')"
@@ -92,7 +98,7 @@ jobs:
           find . -maxdepth 1 -mindepth 1 -type d | sed 's|^\./||' | sort > .dirs_before
           echo "BEFORE"
           cat .dirs_before
-          tar -x -f "$REVDEP_FILE"
+          unzip "$REVDEP_FILE"
           find . -maxdepth 1 -mindepth 1 -type d | sed 's|^\./||' | sort > .dirs_after
           echo "AFTER"
           cat .dirs_after
