@@ -60,11 +60,11 @@ jobs:
             dependencies = FALSE
           )
           cat(
-            paste0("revdep-file=", dl[["fulltarget"]][[1L]])
+            paste0("revdep-file=", dl[["fulltarget"]][[1L]]),
             file = Sys.getenv("GITHUB_OUTPUT")
           )
           cat(
-            paste0("revdep-pkg=", dl[["package"]][[1L]])
+            paste0("revdep-pkg=", dl[["package"]][[1L]]),
             file = Sys.getenv("GITHUB_OUTPUT")
           )
 
