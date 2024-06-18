@@ -80,11 +80,12 @@ jobs:
 
       - name: Unpack revdep
         env:
-          DESTINATION: ${{ steps.download-revdep.outputs.revdep-pkg }}
           REVDEP_FILE: ${{ steps.download-revdep.outputs.revdep-file }}
         run: |
+          ls
           BEFORE=$(find . -maxdepth 1 -type d)
           tar -x -f "$REVDEP_FILE"
+          ls
           AFTER=$(find . -maxdepth 1 -type d)
           NEW_DIRS=$(comm -13 <(echo "$before") <(echo "$after"))
           echo "revdep-dir=$NEW_DIRS"
