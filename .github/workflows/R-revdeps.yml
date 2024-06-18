@@ -82,12 +82,14 @@ jobs:
         env:
           REVDEP_FILE: ${{ steps.download-revdep.outputs.revdep-file }}
         run: |
-          BEFORE=$(find . -maxdepth 1 -type d)
-          echo "BEFORE=$BEFORE"
+          find . -maxdepth 1 -type d > .dirs_before
+          echo "BEFORE"
+          cat .dirs_before
           tar -x -f "$REVDEP_FILE"
-          AFTER=$(find . -maxdepth 1 -type d)
-          echo "AFTER=$AFTER"
-          NEW_DIRS=$(comm -13 <(echo "$BEFORE") <(echo "$AFTER"))
+          find . -maxdepth 1 -type d > .dirs_after
+          echo "AFTER"
+          cat .dirs_after
+          NEW_DIRS=$(comm -13 .dirs_before .dirs_after)
           echo "NEW_DIRS=$NEW_DIRS"
           echo "revdep-dir=$NEW_DIRS"
           echo "revdep-dir=$NEW_DIRS" >> "$GITHUB_OUTPUT"
