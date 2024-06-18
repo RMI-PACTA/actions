@@ -98,10 +98,17 @@ jobs:
           find . -maxdepth 1 -mindepth 1 -type d | sed 's|^\./||' | sort > .dirs_before
           echo "BEFORE"
           cat .dirs_before
-          unzip "$REVDEP_FILE"
+
+          if [ "$REVDEP_TYPE" = "github" ]; then
+            unzip "$REVDEP_FILE"
+          else
+            tar -x -f "$REVDEP_FILE"
+          fi
+
           find . -maxdepth 1 -mindepth 1 -type d | sed 's|^\./||' | sort > .dirs_after
           echo "AFTER"
           cat .dirs_after
+
           NEW_DIRS=$(comm -13 .dirs_before .dirs_after)
           echo "NEW_DIRS=$NEW_DIRS"
           echo "revdep-dir=$NEW_DIRS"
