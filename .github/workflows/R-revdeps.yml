@@ -89,11 +89,11 @@ jobs:
             REVDEP_FILE="$newname"
           fi
 
-          find . -maxdepth 1 -type d > .dirs_before
+          find . -maxdepth 1 -type d | sort > .dirs_before
           echo "BEFORE"
           cat .dirs_before
           tar -x -f "$REVDEP_FILE"
-          find . -maxdepth 1 -type d > .dirs_after
+          find . -maxdepth 1 -type d | sort > .dirs_after
           echo "AFTER"
           cat .dirs_after
           NEW_DIRS=$(comm -13 .dirs_before .dirs_after)
