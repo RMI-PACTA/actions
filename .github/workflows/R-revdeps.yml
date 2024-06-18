@@ -1,0 +1,105 @@
+---
+name: R Reverse Dependency Check
+
+on:
+  workflow_call:
+    inputs:
+      focus-package:
+        description: 'Package for which reverse dependency should be checked'
+        required: true
+        default: '"note"'
+        type: string
+      upgrade-packages:
+        description: 'passed to setup-r-dependencies upgrade'
+        required: false
+        default: 'TRUE'
+        type: string
+      revdeps:
+        description: 'Reverse dependency to check. Accepts {pak} specifications as JSON string'
+        required: false
+        type: string
+        default: |
+          [
+            {"pkg": "r2dii.match"},
+            {"pkg": "RMI-PACTA/r2dii.match"},
+          ]
+
+jobs:
+  R-revdep-check:
+    runs-on: ubuntu-latest
+    name: revdep ${{ matrix.config.pkg }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config: ${{ fromJSON(inputs.revdeps) }}
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: "yes"
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: "local_package"
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: ${{ matrix.config.r }}
+          http-user-agent: ${{ matrix.config.http-user-agent }}
+          use-public-rspm: true
+          extra-repositories: ${{ inputs.extra-repositories }}
+
+      - name: Download Reverse Dependency
+        id: download-revdep
+        env:
+          REVDEP: ${{ matrix.config.pkg }}
+        shell: Rscript {0}
+        run: |
+          dl <- pak::pkg_download(
+            pkg = Sys.getenv("REVDEP"),
+            dest_dir = "revdep-source",
+            dependencies = FALSE
+          )
+          cat(
+            paste0("revdep-file=", dl[["fulltarget"]][[1L]])
+            file = Sys.getenv("GITHUB_OUTPUT")
+          )
+          cat(
+            paste0("revdep-pkg=", dl[["package"]][[1L]])
+            file = Sys.getenv("GITHUB_OUTPUT")
+          )
+
+      - name: Unpack revdep
+        env:
+          DESTINATION: revdep
+          REVDEP_FILE: ${{ steps.download-revdep.outputs.revdep-file }}
+        run: |
+          tar -xv -f "$REVDEP_FILE"
+
+      - name: Install revdep dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::rcmdcheck
+          needs: check
+          upgrade: 'TRUE'
+          dependencies: '"all"'
+          working-directory: ${{ steps.download-revdep.outputs.revdep-pkg }}
+          cache-version: ${{ matrix.config.pkg }}
+
+      - name: Install local HEAD
+        id: install-package
+        env:
+        shell: Rscript {0}
+        run: |
+          dl <- pak::local_install(
+            root = "local_package",
+            dependencies = TRUE
+          )
+
+      - uses: r-lib/actions/check-r-package@v2
+        with:
+          working-directory: ${{ steps.download-revdep.outputs.revdep-pkg }}
+          upload-snapshots: true
+          error-on: ${{ inputs.error-on }}
+          snapshot-artifact-name: ${{ format('{0}-{1}-r{2}-{3}-testthat-snapshots-{4}', runner.os, runner.arch, matrix.config.r, matrix.config.id, inputs.cache-version) }}
