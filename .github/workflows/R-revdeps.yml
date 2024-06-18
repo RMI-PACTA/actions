@@ -84,6 +84,7 @@ jobs:
           )
 
       - name: Unpack revdep
+        id: unpack-revdep
         env:
           REVDEP_FILE: ${{ steps.download-revdep.outputs.revdep-file }}
           REVDEP_TYPE: ${{ steps.download-revdep.outputs.revdep-type }}
@@ -121,7 +122,7 @@ jobs:
           needs: check
           upgrade: 'TRUE'
           dependencies: '"all"'
-          working-directory: ${{ steps.download-revdep.outputs.revdep-dir }}
+          working-directory: ${{ steps.unpack-revdep.outputs.revdep-dir }}
           cache-version: ${{ matrix.config.pkg }}
 
       - name: Install local HEAD
@@ -136,4 +137,4 @@ jobs:
       - uses: r-lib/actions/check-r-package@v2
         name: Check reverse dependency
         with:
-          working-directory: ${{ steps.download-revdep.outputs.revdep-dir }}
+          working-directory: ${{ steps.unpack-revdep.outputs.revdep-dir }}
