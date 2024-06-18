@@ -35,8 +35,8 @@ jobs:
 
       - uses: r-lib/actions/setup-r@v2
         with:
-          r-version: ${{ matrix.config.r }}
-          http-user-agent: ${{ matrix.config.http-user-agent }}
+          r-version: "devel"
+          http-user-agent: "release"
           use-public-rspm: true
 
       - name: Download Reverse Dependency
