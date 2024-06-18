@@ -59,24 +59,23 @@ jobs:
             dest_dir = "revdep-source",
             dependencies = FALSE
           )
-          print(dl[, c("fulltarget", "package")])
-          cat(
-            paste0("revdep-file=", dl[["fulltarget"]][[1L]], "\n"),
-            file = Sys.getenv("GITHUB_OUTPUT"),
-            append = TRUE
+          print(dl[, "package"])
+          if ( file.exists(dl[["fulltarget"]][[1L]]) ) {
+            target_tar <- dl[["fulltarget"]][[1L]]
+          } else if ( file.exists(dl[["fulltarget_tree"]][[1L]]) ) {
+            target_tar <- dl[["fulltarget_tree"]][[1L]]
+          } else {
+            stop("No valid downloads found.")
+          }
+          untar(
+            tarfile = taget_tar,
+            exdir = dl[["package"]][[1L]]
           )
           cat(
             paste0("revdep-pkg=", dl[["package"]][[1L]], "\n"),
             file = Sys.getenv("GITHUB_OUTPUT"),
             append = TRUE
           )
-
-      - name: Unpack revdep
-        env:
-          DESTINATION: revdep
-          REVDEP_FILE: ${{ steps.download-revdep.outputs.revdep-file }}
-        run: |
-          tar -xv -f "$REVDEP_FILE"
 
       - name: Install revdep dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
