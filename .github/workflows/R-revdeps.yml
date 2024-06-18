@@ -98,6 +98,7 @@ jobs:
           )
 
       - uses: r-lib/actions/check-r-package@v2
+        name: Check reverse dependency
         with:
           working-directory: ${{ steps.download-revdep.outputs.revdep-pkg }}
           upload-snapshots: true
