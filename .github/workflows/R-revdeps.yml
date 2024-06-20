@@ -45,6 +45,7 @@ jobs:
           REVDEP: ${{ matrix.config.pkg }}
         shell: Rscript {0}
         run: |
+          print(options("repos"))
           install.packages(
             "pak",
             repos = sprintf(
@@ -59,7 +60,7 @@ jobs:
             dest_dir = "revdep-source",
             dependencies = FALSE
           )
-          print(dl[, "package"])
+          print(dl[, c("package", "version", "mirror", "repotype")])
           if ( file.exists(dl[["fulltarget"]][[1L]]) ) {
             target_tar <- dl[["fulltarget"]][[1L]]
           } else if ( file.exists(dl[["fulltarget_tree"]][[1L]]) ) {
