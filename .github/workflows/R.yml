@@ -91,6 +91,9 @@ jobs:
   codecov:
     if: ${{ inputs.do-codecov }}
     uses: ./.github/workflows/R-codecov.yml
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
 
   r-cmd-check:
     if: ${{ inputs.do-r-cmd-check }}
