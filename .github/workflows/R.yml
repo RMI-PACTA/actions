@@ -116,7 +116,7 @@ jobs:
     uses: ./.github/workflows/R-dep-main-check.yml
 
   revdeps-check:
-    if: ${{ inputs.do-revdeps-check && inputs.revdeps }}
+    if: ${{ inputs.do-revdeps-check && inputs.revdeps != "" }}
     uses: ./.github/workflows/R-revdeps.yml
     with:
       revdeps: ${{ inputs.revdeps }}
