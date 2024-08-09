@@ -12,7 +12,14 @@ permissions: read-all
 
 jobs:
   test-coverage:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        runner:
+          - ubuntu-latest
+          - windows-latest
+          - macOS-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
