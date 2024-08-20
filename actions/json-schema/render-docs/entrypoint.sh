@@ -1,5 +1,25 @@
-#!/bin/sh -l
+#!/bin/sh
 
-echo "Hello $1"
-time=$(date)
-echo "time=$time" >> "$GITHUB_OUTPUT"
+# Check arguments
+if [ -z "$INPUTS" ]; then
+  echo "Input path is required"
+  exit 1
+fi
+
+if [ -z "$OUTPUTS" ]; then
+  echo "Output path is required"
+  exit 1
+fi
+
+# Use INPUT_<INPUT_NAME> to get the value of an input
+INPUT_PATH="/github/workspace/$INPUTS"
+OUTPUT_PATH="/github/workspace/$OUTPUTS"
+
+# Create directory if needed
+if [ ! -d "$OUTPUT_PATH" ]; then
+  echo "Creating directory $OUTPUT_PATH"
+  mkdir -p "$OUTPUT_PATH"
+fi
+
+# Write outputs to the $GITHUB_OUTPUT file
+generate-schema-doc --config-file "/app/config.json" "$INPUT_PATH" "$OUTPUT_PATH"

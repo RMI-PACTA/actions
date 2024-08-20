@@ -1,8 +1,11 @@
-# Container image that runs your code
-FROM alpine:3.10
+FROM python:3.12.5-alpine
 
-# Copies your code file from your action repository to the filesystem path `/` of the container
-COPY entrypoint.sh /entrypoint.sh
+ENV PIP_ROOT_USER_ACTION=ignore
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir \
+      json-schema-for-humans==1.0.2
 
-# Code file to execute when the docker container starts up (`entrypoint.sh`)
-ENTRYPOINT ["/entrypoint.sh"]
+COPY config.json /app/config.json
+COPY entrypoint.sh /app/entrypoint.sh
+
+CMD ["/app/entrypoint.sh"]
