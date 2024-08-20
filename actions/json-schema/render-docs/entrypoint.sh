@@ -40,3 +40,5 @@ generate-schema-doc \
   "/app/config.json"\
   "$INPUT_PATH"\
   "$OUTPUT_PATH"
+
+ls -l "$OUTPUT_PATH"
