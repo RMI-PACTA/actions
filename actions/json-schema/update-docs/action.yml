@@ -1,0 +1,49 @@
+# action.yml
+name: 'Render JSON Schema Documentation'
+description: 'Render JSON Schema docs usin json-schema-for-humans'
+inputs:
+  input-files:  # id of input
+    description: 'Schema file or dir to render'
+    required: true
+  outputs:
+    description: 'Path to output directory (if directory input) or file (if file input)'
+    required: true
+  output-format:
+    description: 'Format for rendered docs. html (default) or md'
+    required: false
+    default: html
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  env:
+    INPUTS: ${{ inputs.input-files }}
+    OUTPUTS: ${{ inputs.outputs }}
+    INPUT_TEMPLATE_NAME: ${{ inputs.output-format }}
+
+jobs:
+  docs-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Render Docs
+        uses: ../render-docs
+        with:
+          input-files: ${{ inputs.input-files }}
+          outputs: ${{ inputs.outputs }}
+          output-format: $${{ inputs.output-format }}
+
+      - name: Check for changed files
+        env:
+          OUTPUTS: ${{ inputs.outputs }}
+        run: |
+          git add --all
+          changes=$(git diff-index HEAD --name-only -- $OUTPUTS)
+          if [ -n "$changes" ]; then
+            echo "Changes found after documenting."
+            git --no-pager diff
+            echo "$changes"
+            echo "Please update documentation."
+            exit 1
+          else
+            echo "No changes found after documenting."
+            exit 0
+          fi
