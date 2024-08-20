@@ -9,6 +9,8 @@ services:
       GITHUB_OUTPUT: "/github/workspace/GITHUB_OUTPUT.txt"
       INPUTS: "schema"
       OUTPUTS: "schema-docs"
+      OUTPUT_FORMAT: "md"
+      INPUT_TEMPLATE_NAME: "html"
     volumes:
       - type: bind
         source: ${workspace:-./workspace}
