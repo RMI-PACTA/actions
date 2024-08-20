@@ -10,7 +10,6 @@ services:
       INPUTS: "schema"
       OUTPUTS: "schema-docs"
       OUTPUT_FORMAT: "md"
-      INPUT_TEMPLATE_NAME: "html"
     volumes:
       - type: bind
         source: ${workspace:-./workspace}
