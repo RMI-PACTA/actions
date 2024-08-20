@@ -1,17 +1,21 @@
 # action.yml
-name: 'Hello World'
-description: 'Greet someone and record the time'
+name: 'Render JSON Schema Documentation'
+description: 'Render JSON Schema docs usin json-schema-for-humans'
 inputs:
-  who-to-greet:  # id of input
-    description: 'Who to greet'
+  input-files:  # id of input
+    description: 'Schema file or dir to render'
     required: true
-    default: 'World'
-outputs:
-  time: # id of output
-    description: 'The time we greeted you'
+  outputs:
+    description: 'Path to output directory (if directory input) or file (if file input)'
+    required: true
+  output-format:
+    description: 'Format for rendered docs. html (default) or md'
+    required: false
+    default: html
 runs:
   using: 'docker'
   image: 'Dockerfile'
-  args:
-    - ${{ inputs.who-to-greet }}
-
+  env:
+    INPUTS: ${{ inputs.input-files }}
+    OUTPUTS: ${{ inputs.outputs }}
+    INPUT_TEMPLATE_NAME: ${{ inputs.output-format }}
