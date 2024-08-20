@@ -16,13 +16,14 @@ runs:
   using: 'composite'
   steps:
     - name: Render Docs
-      uses: ../render-docs
+      uses: RMI-PACTA/actions/actions/json-schema/render-docs@json-schema
       with:
         input-files: ${{ inputs.input-files }}
         outputs: ${{ inputs.outputs }}
         output-format: $${{ inputs.output-format }}
 
     - name: Check for changed files
+      shell: bash
       env:
         OUTPUTS: ${{ inputs.outputs }}
       run: |
