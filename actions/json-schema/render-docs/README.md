@@ -1,22 +1,38 @@
-# Hello world docker action
+# Render JSON Schema documentation
 
-This action prints "Hello World" or "Hello" + the name of a person to greet to the log.
+This action uses [json-schema-for-humans](https://github.com/coveooss/json-schema-for-humans) to render documentation for JSON schemata.
 
 ## Inputs
 
-## `who-to-greet`
+## `input-files`
 
-**Required** The name of the person to greet. Default `"World"`.
+**Required**
+Path to JSON schema file or directory of files to be processed.
+See [json-schema-for-humans documentation](https://github.com/coveooss/json-schema-for-humans?tab=readme-ov-file#usage) for more details.
+
+## `outputs`
+
+**Required**
+Path to directory (or filename if rendering single file) for rendered documentation to be written..
+See [json-schema-for-humans documentation](https://github.com/coveooss/json-schema-for-humans?tab=readme-ov-file#usage) for more details.
+
+## `output-format`
+
+Default: `html`.
+Should the rendered documentation be `html` or markdown (`md`)
 
 ## Outputs
 
-## `time`
-
-The time we greeted you.
+None
 
 ## Example usage
 
-uses: actions/hello-world-docker-action@v2
-with:
-  who-to-greet: 'Mona the Octocat'
+```yaml
+      - id: render-json-schema
+        uses: RMI-PACTA/actions/actions/json-schema/render-docs@main
+        with:
+          input-files: 'inst/extdata/schema'
+          outputs: 'inst/extdata/schema'
+          output-format: html
+```
 
