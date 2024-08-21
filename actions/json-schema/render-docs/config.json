@@ -1,6 +1,6 @@
 {
   "expand_buttons": true,
-  "footer_show_time": true,
+  "footer_show_time": false,
   "minify": true,
   "show_breadcrumbs": true,
   "show_toc": true,
