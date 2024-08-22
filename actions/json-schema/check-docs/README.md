@@ -8,7 +8,7 @@ Note that the docs must be committed to the repo in order for this action to suc
 
 ## Inputs
 
-INputs are the same as the `render-docs` action, and are passed through to that action.
+Inputs are the same as the `render-docs` action and are passed through to that action.
 
 ## `input-files`
 
