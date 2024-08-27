@@ -12,6 +12,9 @@ inputs:
     description: 'Format for rendered docs. html (default) or md'
     required: false
     default: html
+  config-file:
+    description: 'path to json-schema-for-humans config file'
+    required: false
 runs:
   using: 'docker'
   image: 'Dockerfile'
@@ -19,3 +22,4 @@ runs:
     INPUTS: ${{ inputs.input-files }}
     OUTPUTS: ${{ inputs.outputs }}
     INPUT_TEMPLATE_NAME: ${{ inputs.output-format }}
+    CONFIG_FILE: ${{ inputs.config-file }}

@@ -21,6 +21,10 @@ See [json-schema-for-humans documentation](https://github.com/coveooss/json-sche
 Default: `html`.
 Should the rendered documentation be `html` or markdown (`md`)
 
+## `config-file`
+
+Path in-repo to json-schema-for-humans config file.
+
 ## Outputs
 
 None
