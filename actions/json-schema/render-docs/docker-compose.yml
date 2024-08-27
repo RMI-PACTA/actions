@@ -7,9 +7,10 @@ services:
     # command: "sh"
     environment:
       GITHUB_OUTPUT: "/github/workspace/GITHUB_OUTPUT.txt"
-      INPUTS: "schema"
-      OUTPUTS: "schema-docs"
+      INPUTS: "inst/extdata/schema"
+      OUTPUTS: "inst/extdata/schema-docs"
       OUTPUT_FORMAT: "md"
+      CONFIG_FILE: "inst/extdata/schema-config/config.json"
     volumes:
       - type: bind
         source: ${workspace:-./workspace}
