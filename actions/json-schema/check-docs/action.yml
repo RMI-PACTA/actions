@@ -12,6 +12,9 @@ inputs:
     description: 'Format for rendered docs. html (default) or md'
     required: false
     default: html
+  config-file:
+    description: 'path to json-schema-for-humans config file'
+    required: false
 runs:
   using: 'composite'
   steps:
@@ -23,6 +26,7 @@ runs:
         input-files: ${{ inputs.input-files }}
         outputs: ${{ inputs.outputs }}
         output-format: $${{ inputs.output-format }}
+        config-file: ${{ inputs.config-file }}
 
     - name: Check for changed files
       shell: bash
