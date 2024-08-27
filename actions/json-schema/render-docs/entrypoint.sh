@@ -29,7 +29,6 @@ else
   CONFIG_PATH="/github/workspace/$CONFIG_FILE"
 fi
 
-
 # Use INPUT_<INPUT_NAME> to get the value of an input
 INPUT_PATH="/github/workspace/$INPUTS"
 OUTPUT_PATH="/github/workspace/$OUTPUTS"
@@ -41,10 +40,12 @@ if [ ! -d "$OUTPUT_PATH" ]; then
 fi
 
 # Write outputs to the $GITHUB_OUTPUT file
+#shellcheck disable=SC2086 
+#(passing a command flag)
 generate-schema-doc \
-  "$CONFIG_OPTIONS" \
+  $CONFIG_OPTIONS \
   --config-file "$CONFIG_PATH" \
-  "$INPUT_PATH"\
+  "$INPUT_PATH" \
   "$OUTPUT_PATH"
 
 ls -l "$OUTPUT_PATH"
