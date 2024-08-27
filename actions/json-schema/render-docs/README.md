@@ -4,24 +4,24 @@ This action uses [json-schema-for-humans](https://github.com/coveooss/json-schem
 
 ## Inputs
 
-## `input-files`
+### `input-files`
 
 **Required**
 Path to JSON schema file or directory of files to be processed.
 See [json-schema-for-humans documentation](https://github.com/coveooss/json-schema-for-humans?tab=readme-ov-file#usage) for more details.
 
-## `outputs`
+### `outputs`
 
 **Required**
 Path to directory (or filename if rendering single file) for rendered documentation to be written..
 See [json-schema-for-humans documentation](https://github.com/coveooss/json-schema-for-humans?tab=readme-ov-file#usage) for more details.
 
-## `output-format`
+### `output-format`
 
 Default: `html`.
 Should the rendered documentation be `html` or markdown (`md`)
 
-## `config-file`
+### `config-file`
 
 Path in-repo to json-schema-for-humans config file.
 
@@ -38,5 +38,6 @@ None
           input-files: 'inst/extdata/schema'
           outputs: 'inst/extdata/schema'
           output-format: html
+          config-file: 'inst/extdata/schema-config.json'
 ```
 
