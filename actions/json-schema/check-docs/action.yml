@@ -21,7 +21,7 @@ runs:
     - uses: actions/checkout@v4
 
     - name: Render Docs
-      uses: RMI-PACTA/actions/actions/json-schema/render-docs@json-schema
+      uses: RMI-PACTA/actions/actions/json-schema/render-docs@main
       with:
         input-files: ${{ inputs.input-files }}
         outputs: ${{ inputs.outputs }}
