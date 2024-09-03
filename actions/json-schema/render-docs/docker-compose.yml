@@ -1,0 +1,18 @@
+---
+services:
+  render-docs:
+    build: .
+    # stdin_open: true
+    # tty: true
+    # command: "sh"
+    environment:
+      GITHUB_OUTPUT: "/github/workspace/GITHUB_OUTPUT.txt"
+      INPUTS: "inst/extdata/schema"
+      OUTPUTS: "inst/extdata/schema-docs"
+      OUTPUT_FORMAT: "md"
+      CONFIG_FILE: "inst/extdata/schema-config/config.json"
+    volumes:
+      - type: bind
+        source: ${workspace:-./workspace}
+        target: /github/workspace
+        read_only: false

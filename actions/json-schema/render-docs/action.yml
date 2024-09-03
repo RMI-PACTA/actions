@@ -1,0 +1,25 @@
+# action.yml
+name: 'Render JSON Schema Documentation'
+description: 'Render JSON Schema docs using json-schema-for-humans'
+inputs:
+  input-files:  # id of input
+    description: 'Schema file or dir to render'
+    required: true
+  outputs:
+    description: 'Path to output directory (if directory input) or file (if file input)'
+    required: true
+  output-format:
+    description: 'Format for rendered docs. html (default) or md'
+    required: false
+    default: html
+  config-file:
+    description: 'path to json-schema-for-humans config file'
+    required: false
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  env:
+    INPUTS: ${{ inputs.input-files }}
+    OUTPUTS: ${{ inputs.outputs }}
+    INPUT_TEMPLATE_NAME: ${{ inputs.output-format }}
+    CONFIG_FILE: ${{ inputs.config-file }}

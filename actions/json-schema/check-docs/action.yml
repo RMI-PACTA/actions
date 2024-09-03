@@ -1,0 +1,47 @@
+# action.yml
+name: 'Check JSON Schema Documentation'
+description: 'Check JSON Schema docs usin json-schema-for-humans'
+inputs:
+  input-files:  # id of input
+    description: 'Schema file or dir to render'
+    required: true
+  outputs:
+    description: 'Path to output directory (if directory input) or file (if file input)'
+    required: true
+  output-format:
+    description: 'Format for rendered docs. html (default) or md'
+    required: false
+    default: html
+  config-file:
+    description: 'path to json-schema-for-humans config file'
+    required: false
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/checkout@v4
+
+    - name: Render Docs
+      uses: RMI-PACTA/actions/actions/json-schema/render-docs@json-schema
+      with:
+        input-files: ${{ inputs.input-files }}
+        outputs: ${{ inputs.outputs }}
+        output-format: $${{ inputs.output-format }}
+        config-file: ${{ inputs.config-file }}
+
+    - name: Check for changed files
+      shell: bash
+      env:
+        OUTPUTS: ${{ inputs.outputs }}
+      run: |
+        git add --all
+        changes=$(git diff-index HEAD --name-only -- $OUTPUTS)
+        if [ -n "$changes" ]; then
+          echo "Changes found after documenting."
+          git --no-pager diff
+          echo "$changes"
+          echo "Please update documentation."
+          exit 1
+        else
+          echo "No changes found after documenting."
+          exit 0
+        fi
