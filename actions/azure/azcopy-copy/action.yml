@@ -10,7 +10,7 @@ inputs:
     description: 'Destination (copy to)'
     required: true
   flags:
-    description: '(optional) Additional flags to pass to azcopy copy. See: https://learn.microsoft.com/en-us/azure/storage/common/storage-ref-azcopy-copy?toc=%2Fazure%2Fstorage%2Fblobs%2Ftoc.json#options'
+    description: '(optional) Additional flags to pass to azcopy copy. See README for more information.'
     required: false
 runs:
   using: 'composite'
@@ -18,17 +18,11 @@ runs:
 
     - name: Check for existing `azcopy`
       run: check-for-azcopy.sh
+      shell: sh
 
     - name: Install `azcopy`
       run: install-azcopy.sh
-
-        # https://github.com/Azure/login?tab=readme-ov-file#login-with-openid-connect-oidc-recommended
-    - name: Azure Login
-      uses: azure/login@v2
-      with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      shell: sh
 
     - name: Upload results to blob store using azcopy
       env:
@@ -37,9 +31,10 @@ runs:
         SOURCE: ${{ inputs.source }}
         DESTINATION: ${{ inputs.destination }}
         FLAGS: ${{ inputs.flags }}
-        run: |
-          azcopy \
-            copy \
-            "$SOURCE" \
-            "$DESTINATION" \
-            "$FLAGS"
+      shell: sh
+      run: |
+        azcopy \
+          copy \
+          "$SOURCE" \
+          "$DESTINATION" \
+          "$FLAGS"
