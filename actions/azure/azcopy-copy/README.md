@@ -2,6 +2,8 @@
 
 This action uses `azcopy` (installing if required) to move files from a local filesystem to an Azure Blob container, or vice-versa.
 
+Note that this action requires running the `azure/login` action first.
+
 ## Inputs
 
 ### `source`
