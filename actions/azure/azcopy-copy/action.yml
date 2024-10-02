@@ -17,11 +17,11 @@ runs:
   steps:
 
     - name: Check for existing `azcopy`
-      run: check-for-azcopy.sh
+      run: ${{ github.action_path }}/check-for-azcopy.sh
       shell: sh
 
     - name: Install `azcopy`
-      run: install-azcopy.sh
+      run: ${{ github.action_path }}/install-azcopy.sh
       shell: sh
 
     - name: Upload results to blob store using azcopy
