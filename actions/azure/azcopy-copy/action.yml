@@ -20,10 +20,12 @@ runs:
   steps:
 
     - name: Check for existing `azcopy`
+      id: azcopy-check
       run: ${{ github.action_path }}/check-for-azcopy.sh
       shell: sh
 
     - name: Install `azcopy`
+      if: ${{ steps.azcopy-check.outputs.azcopy-installed }}
       run: ${{ github.action_path }}/install-azcopy.sh
       shell: sh
 
