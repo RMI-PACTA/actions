@@ -12,6 +12,9 @@ inputs:
   flags:
     description: '(optional) Additional flags to pass to azcopy copy. See README for more information.'
     required: false
+  tenant-id:
+    description: 'Azure Tenant (same as azure/login)'
+    required: true
 runs:
   using: 'composite'
   steps:
@@ -27,9 +30,10 @@ runs:
     - name: Upload results to blob store using azcopy
       env:
         AZCOPY_AUTO_LOGIN_TYPE: AZCLI
-        SOURCE: ${{ inputs.source }}
+        AZCOPY_TENANT_ID: ${{ inputs.tenant-id }}
         DESTINATION: ${{ inputs.destination }}
         FLAGS: ${{ inputs.flags }}
+        SOURCE: ${{ inputs.source }}
       shell: sh
       run: |
         azcopy \
