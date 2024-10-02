@@ -9,8 +9,6 @@ sudo apt-get install -y azcopy
 echo "::endgroup::"
 
 # Show version
-echo "azcopy version:"
 azcopy --version
 # Show path
-echo "azcopy path:"
 type azcopy
