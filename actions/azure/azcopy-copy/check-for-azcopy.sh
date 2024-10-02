@@ -12,3 +12,4 @@ else
 fi
 
 echo "azcopy is installed at: $azcopy_path"
+echo "PATH=$PATH"

@@ -12,3 +12,4 @@ echo "::endgroup::"
 azcopy --version
 # Show path
 type azcopy
+echo "$PATH"
