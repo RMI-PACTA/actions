@@ -32,23 +32,10 @@ runs:
       run: ${{ github.action_path }}/install-azcopy.sh
       shell: sh
 
-    - name: azcopy login
-      env:
-        AZCOPY_MSI_CLIENT_ID: ${{ inputs.client-id }}
-        AZCOPY_TENANT_ID: ${{ inputs.tenant-id }}
-        DESTINATION: ${{ inputs.destination }}
-        FLAGS: ${{ inputs.flags }}
-        SOURCE: ${{ inputs.source }}
-      shell: sh
-      run: |
-        azcopy \
-          login \
-          --tenant-id="$AZURE_TENANT_ID" \
-          --identity \
-          --identity-client-id "$AZCOPY_MSI_CLIENT_ID"
-
     - name: Upload results to blob store using azcopy
       env:
+        AZCOPY_AUTO_LOGIN_TYPE: AZCLI
+        AZCOPY_MSI_CLIENT_ID: ${{ inputs.client-id }}
         AZCOPY_TENANT_ID: ${{ inputs.tenant-id }}
         DESTINATION: ${{ inputs.destination }}
         FLAGS: ${{ inputs.flags }}
