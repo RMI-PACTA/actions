@@ -1,0 +1,45 @@
+---
+name: 'Copy files to/from Azure Blob Container'
+author: 'Alex Axthelm'
+description: 'Copy files to/from Azure Blob Container using azcopy'
+inputs:
+  source:
+    description: 'Source (to copy)'
+    required: true
+  destination:
+    description: 'Destination (copy to)'
+    required: true
+  flags:
+    description: '(optional) Additional flags to pass to azcopy copy. See: https://learn.microsoft.com/en-us/azure/storage/common/storage-ref-azcopy-copy?toc=%2Fazure%2Fstorage%2Fblobs%2Ftoc.json#options'
+    required: false
+runs:
+  using: 'composite'
+  steps:
+
+    - name: Check for existing `azcopy`
+      run: check-for-azcopy.sh
+
+    - name: Install `azcopy`
+      run: install-azcopy.sh
+
+        # https://github.com/Azure/login?tab=readme-ov-file#login-with-openid-connect-oidc-recommended
+    - name: Azure Login
+      uses: azure/login@v2
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    - name: Upload results to blob store using azcopy
+      env:
+        AZCOPY_AUTO_LOGIN_TYPE: AZCLI
+        AZCOPY_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        SOURCE: ${{ inputs.source }}
+        DESTINATION: ${{ inputs.destination }}
+        FLAGS: ${{ inputs.flags }}
+        run: |
+          azcopy \
+            copy \
+            "$SOURCE" \
+            "$DESTINATION" \
+            "$FLAGS"
