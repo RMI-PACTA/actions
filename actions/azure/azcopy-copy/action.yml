@@ -34,7 +34,7 @@ runs:
 
     - name: Upload results to blob store using azcopy
       env:
-        AZCOPY_AUTO_LOGIN_TYPE: AZCLI
+        AZCOPY_AUTO_LOGIN_TYPE: MSI
         AZCOPY_MSI_CLIENT_ID: ${{ inputs.client-id }}
         AZCOPY_TENANT_ID: ${{ inputs.tenant-id }}
         DESTINATION: ${{ inputs.destination }}
