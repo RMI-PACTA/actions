@@ -1,6 +1,7 @@
 #! /bin/sh
 azcopy_path="$(command -v azcopy 2>&1 >/dev/null)"
 if [ -n "$azcopy_path" ]
+echo "azcopy is installed at: $azcopy_path"
 then
   echo "azcopy is installed at: $azcopy_path"
   echo "azcopy-installed=true" >> "$GITHUB_OUTPUT"
