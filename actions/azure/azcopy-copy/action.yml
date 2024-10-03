@@ -95,10 +95,8 @@ runs:
         if [ "$DIRECTION" = "upload" ]; then
           SOURCE="$LOCAL_PATH"
           DESTINATION="$BLOB_URL?$AZ_SAS"
-          echo "::add-mask::$DESTINATION"
         elif [ "$DIRECTION" = "download" ]; then
           SOURCE="$BLOB_URL?$AZ_SAS"
-          echo "::add-mask::$SOURCE"
           DESTINATION="$LOCAL_PATH"
         else
           echo "Invalid value for direction (upload/download)"
@@ -112,8 +110,6 @@ runs:
 
     - name: Upload results to blob store using azcopy
       env:
-        AZCOPY_AUTO_LOGIN_TYPE: AZCLI
-        AZCOPY_TENANT_ID: ${{ inputs.tenant-id }}
         DESTINATION: ${{ steps.prepare-source.outputs.destination }}
         FLAGS: ${{ inputs.flags }}
         SOURCE: ${{  steps.prepare-source.outputs.source }}
