@@ -56,9 +56,9 @@ runs:
         # azcliversion: 2.30.0
         inlineScript: |
           END=`date -u -d "$SAS_EXPIRY" '+%Y-%m-%dT%H:%MZ'`
-          if ["DIRECTION" -eq "upload"]; then
+          if ["$DIRECTION" -eq "upload"]; then
             PERMISSIONS="w"
-          elif ["DIRECTION" -eq "download"]; then
+          elif ["$DIRECTION" -eq "download"]; then
             PERMISSIONS="rl"
           else
             echo "Invalid value for direction (upload/download)"
