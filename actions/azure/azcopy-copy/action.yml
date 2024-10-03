@@ -32,6 +32,22 @@ runs:
       run: ${{ github.action_path }}/install-azcopy.sh
       shell: sh
 
+    - name: Generate SAS
+      uses: azure/CLI@v2
+      with:
+        # azcliversion: 2.30.0
+        inlineScript: |
+          end=`date -u -d "5 minutes" '+%Y-%m-%dT%H:%MZ'
+          az storage fs directory \
+            generate-sas \
+            --account-name pactadatadev \
+            --name alpha \
+            --file-system ghactions-workflow-transition-monitor-results-reports \
+            --https-only \
+            --permissions dlrw \
+            --auth-mode login \
+            --expiry $end -o tsv
+
     - name: Upload results to blob store using azcopy
       env:
         AZCOPY_AUTO_LOGIN_TYPE: AZCLI
