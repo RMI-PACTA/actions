@@ -37,7 +37,7 @@ runs:
       with:
         # azcliversion: 2.30.0
         inlineScript: |
-          end=`date -u -d "5 minutes" '+%Y-%m-%dT%H:%MZ'
+          end=`date -u -d "5 minutes" '+%Y-%m-%dT%H:%MZ'`
           az storage fs directory \
             generate-sas \
             --account-name pactadatadev \
