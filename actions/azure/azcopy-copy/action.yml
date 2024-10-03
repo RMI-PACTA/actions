@@ -3,11 +3,14 @@ name: 'Copy files to/from Azure Blob Container'
 author: 'Alex Axthelm'
 description: 'Copy files to/from Azure Blob Container using azcopy'
 inputs:
-  source:
-    description: 'Source (to copy)'
+  local-path:
+    description: 'Path to Local file or directory'
     required: true
-  destination:
-    description: 'Destination (copy to)'
+  blob-url:
+    description: 'URL for Azure blob (including subdirectories)'
+    required: true
+  direction:
+    description: '"upload" or "download"'
     required: true
   flags:
     description: '(optional) Additional flags to pass to azcopy copy. See README for more information.'
@@ -15,9 +18,10 @@ inputs:
   tenant-id:
     description: 'Azure Tenant (same as azure/login)'
     required: true
-  client-id:
-    description: 'Azure Managed Identity Client ID (same as azure/login)'
-    required: true
+  sas-expiry:
+    description: 'Duration for SAS validity (default: 5 minutes)'
+    required: false
+    default: '5 minutes'
 runs:
   using: 'composite'
   steps:
@@ -32,30 +36,85 @@ runs:
       run: ${{ github.action_path }}/install-azcopy.sh
       shell: sh
 
+    - name: Extract AZ information
+      id: extract-az-info
+      env:
+        BLOB_URL: ${{ inputs.blob-url }}
+      run: ${{ github.action_path }}/extract-blob-data-from-url.sh
+      shell: sh
+
     - name: Generate SAS
+      id: generate-sas
       uses: azure/CLI@v2
+      env:
+        AZ_ACCOUNT_NAME: ${{ steps.extract-az-info.outputs.az-storage-account }}
+        AZ_FILE_SYSTEM: ${{ steps.extract-az-info.outputs.az-file-system }}
+        AZ_PATH: ${{ steps.extract-az-info.outputs.az-path }}
+        DIRECTION: ${{ inputs.direction }}
+        SAS_EXPIRY: ${{ inputs.sas-expiry }}
       with:
         # azcliversion: 2.30.0
         inlineScript: |
-          end=`date -u -d "5 minutes" '+%Y-%m-%dT%H:%MZ'`
-          az storage fs directory \
-            generate-sas \
-            --account-name pactadatadev \
-            --name alpha \
-            --file-system ghactions-workflow-transition-monitor-results-reports \
-            --https-only \
-            --permissions dlrw \
-            --auth-mode login \
-            --as-user \
-            --expiry $end -o tsv
+          END=`date -u -d "$SAS_EXPIRY" '+%Y-%m-%dT%H:%MZ'`
+          if ["DIRECTION" -eq "upload"]; then
+            PERMISSIONS="w"
+          elif ["DIRECTION" -eq "download"]; then
+            PERMISSIONS="rl"
+          else
+            echo "Invalid value for direction (upload/download)"
+            exit 1
+          fi
+
+          AZ_SAS=$(
+            az storage fs directory \
+              generate-sas \
+              --account-name "$AZ_ACCOUNT_NAME" \
+              --name "$AZ_PATH" \
+              --file-system "$AZ_FILESYSTEM" \
+              --https-only \
+              --permissions $PERMISSIONS \
+              --auth-mode login \
+              --as-user \
+              --expiry $END \
+              -o tsv
+          )
+          echo "::add-mask::$AZ_SAS"
+          echo "az-sas=$AZ_SAS"
+          echo "az-sas=$AZ_SAS" >> "$GITHUB_OUTPUT"
+
+    - name: Drepare Source and Destination variables
+      id: prepare-source
+      env:
+        LOCAL_PATH: ${{ inputs.local-path }}
+        BLOB_URL: ${{ inputs.blob-url }}
+        AZ_SAS: ${{ steps.generate-sas.outputs.az-sas }}
+      shell: sh
+      run: |
+        if ["DIRECTION" -eq "upload"]; then
+          SOURCE="$LOCAL_PATH"
+          DESTINATION="$BLOB_URL?$AZ_SAS"
+          echo "::add-mask::$DESTINATION"
+        elif ["DIRECTION" -eq "download"]; then
+          SOURCE="$BLOB_URL?$AZ_SAS"
+          echo "::add-mask::$SOURCE"
+          DESTINATION="$LOCAL_PATH"
+        else
+          echo "Invalid value for direction (upload/download)"
+          exit 1
+        fi
+        echo "source=$SOURCE"
+        echo "source=$SOURCE" >> "$GITHUB_OUTPUT"
+        echo "destination=$DESTINATION"
+        echo "destination=$DESTINATION" >> "$GITHUB_OUTPUT"
+
 
     - name: Upload results to blob store using azcopy
       env:
         AZCOPY_AUTO_LOGIN_TYPE: AZCLI
         AZCOPY_TENANT_ID: ${{ inputs.tenant-id }}
-        DESTINATION: ${{ inputs.destination }}
+        DESTINATION: ${{ steps.prepare-source.outputs.destination }}
         FLAGS: ${{ inputs.flags }}
-        SOURCE: ${{ inputs.source }}
+        SOURCE: ${{  steps.prepare-source.outputs.source }}
       shell: sh
       run: |
         azcopy \
