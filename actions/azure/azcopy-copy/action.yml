@@ -75,6 +75,7 @@ runs:
               --permissions $PERMISSIONS \
               --auth-mode login \
               --as-user \
+              --full-uri \
               --expiry $END \
               -o tsv
           )
@@ -94,9 +95,9 @@ runs:
         # Define Source and Destination
         if [ "$DIRECTION" = "upload" ]; then
           SOURCE="$LOCAL_PATH"
-          DESTINATION="$BLOB_URL?$AZ_SAS"
+          DESTINATION="AZ_SAS"
         elif [ "$DIRECTION" = "download" ]; then
-          SOURCE="$BLOB_URL?$AZ_SAS"
+          SOURCE="$AZ_SAS"
           DESTINATION="$LOCAL_PATH"
         else
           echo "Invalid value for direction (upload/download)"
