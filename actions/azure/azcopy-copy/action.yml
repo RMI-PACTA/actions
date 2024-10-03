@@ -82,7 +82,7 @@ runs:
           echo "az-sas=$AZ_SAS"
           echo "az-sas=$AZ_SAS" >> "$GITHUB_OUTPUT"
 
-    - name: Drepare Source and Destination variables
+    - name: Prepare Source and Destination variables
       id: prepare-source
       env:
         LOCAL_PATH: ${{ inputs.local-path }}
@@ -90,11 +90,12 @@ runs:
         AZ_SAS: ${{ steps.generate-sas.outputs.az-sas }}
       shell: sh
       run: |
-        if ["DIRECTION" -eq "upload"]; then
+        # Define Source and Destination
+        if [ "$DIRECTION" = "upload" ]; then
           SOURCE="$LOCAL_PATH"
           DESTINATION="$BLOB_URL?$AZ_SAS"
           echo "::add-mask::$DESTINATION"
-        elif ["DIRECTION" -eq "download"]; then
+        elif [ "$DIRECTION" = "download" ]; then
           SOURCE="$BLOB_URL?$AZ_SAS"
           echo "::add-mask::$SOURCE"
           DESTINATION="$LOCAL_PATH"
