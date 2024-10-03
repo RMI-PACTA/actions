@@ -21,7 +21,7 @@ inputs:
   sas-expiry:
     description: 'Duration for SAS validity (default: 5 minutes)'
     required: false
-    default: '5 minutes'
+    default: '2 minutes'
 runs:
   using: 'composite'
   steps:
@@ -78,7 +78,7 @@ runs:
               --expiry $END \
               -o tsv
           )
-          echo "::add-mask::$AZ_SAS"
+          # echo "::add-mask::$AZ_SAS"
           echo "az-sas=$AZ_SAS"
           echo "az-sas=$AZ_SAS" >> "$GITHUB_OUTPUT"
 
