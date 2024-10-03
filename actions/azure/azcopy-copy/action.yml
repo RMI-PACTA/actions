@@ -57,9 +57,9 @@ runs:
         inlineScript: |
           END=`date -u -d "$SAS_EXPIRY" '+%Y-%m-%dT%H:%MZ'`
           if [ "$DIRECTION" = "upload" ]; then
-            PERMISSIONS="w"
+            PERMISSIONS="dlrw"
           elif [ "$DIRECTION" = "download" ]; then
-            PERMISSIONS="rl"
+            PERMISSIONS="dlrw"
           else
             echo "Invalid value for direction (upload/download)"
             exit 1
