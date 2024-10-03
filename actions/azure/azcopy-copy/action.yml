@@ -85,9 +85,10 @@ runs:
     - name: Prepare Source and Destination variables
       id: prepare-source
       env:
-        LOCAL_PATH: ${{ inputs.local-path }}
-        BLOB_URL: ${{ inputs.blob-url }}
         AZ_SAS: ${{ steps.generate-sas.outputs.az-sas }}
+        BLOB_URL: ${{ inputs.blob-url }}
+        DIRECTION: ${{ inputs.direction }}
+        LOCAL_PATH: ${{ inputs.local-path }}
       shell: sh
       run: |
         # Define Source and Destination
