@@ -46,6 +46,7 @@ runs:
             --https-only \
             --permissions dlrw \
             --auth-mode login \
+            --as-user \
             --expiry $end -o tsv
 
     - name: Upload results to blob store using azcopy
