@@ -22,7 +22,10 @@ runs:
 
     - name: Install Requirements
       shell: sh
-      run: pip install -r ${{ github.action_path }}/requirements.txt
+      run: |
+        echo "::group::Requirements Installation"
+        pip install -r ${{ github.action_path }}/requirements.txt
+        echo "::endgroup::"
 
     - name: Copy files
       env:
