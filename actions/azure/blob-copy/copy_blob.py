@@ -7,10 +7,8 @@ from pathlib import Path
 
 # create logger
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 # create console handler and set level to debug
 ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
 # create formatter
 formatter = logging.Formatter('%(levelname)s: %(asctime)s %(message)s')
 # add formatter to ch
@@ -80,5 +78,45 @@ if destination_account_url and not source_account_url:
 
 if source_account_url and not destination_account_url:
     logger.info("Source is a blob URL. Copying from blob to local file.")
-    logger.error("Not implemented yet.")
-    exit(1)
+
+    account_url = source_account_url.group(1)
+    logger.debug(f"Account URL: {account_url}")
+    container_name = source_account_url.group(2)
+    logger.debug(f"Container Name: {container_name}")
+    blob_path = Path(source_account_url.group(3))
+
+    blob_service_client = BlobServiceClient(
+            account_url=account_url,
+            credential=default_credential
+        )
+    container_client = blob_service_client.get_container_client(container_name)
+
+    blob_list = container_client.list_blobs(
+        name_starts_with=str(blob_path)
+    )
+
+    for blob in blob_list:
+        logger.debug(f"Processing Blob: {blob.name}.")
+        if blob.size == 0:
+            logger.debug(f"Blob {blob.name} is 0 Bytes. This usually indicate s a directory. Skipping.")
+            continue
+        else:
+            logger.info(f"Downloading {blob.name} to local file.")
+            download_path = Path(destination).joinpath(blob.name)
+            logger.debug(f"Download Path: {download_path}")
+            if not overwrite_flag and download_path.exists():
+                logger.error(f"File {download_path} already exists. Aborting.")
+                exit(1)
+            download_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(download_path, "wb") as data:
+                blob_client = container_client.get_blob_client(blob.name)
+                data.write(blob_client.download_blob().readall())
+
+
+    logger.debug(f"Blob Path: {blob_path}")
+    blob_service_client = BlobServiceClient(
+            account_url=account_url,
+            credential=default_credential
+        )
+    container_client = blob_service_client.get_container_client(container_name)
+
