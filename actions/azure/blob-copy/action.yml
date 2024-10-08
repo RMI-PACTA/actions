@@ -31,5 +31,6 @@ runs:
       env:
         SOURCE: ${{ inputs.source }}
         DESTINATION: ${{ inputs.destination }}
+        OVERWRITE: ${{ inputs.overwrite }}
       shell: sh
       run: python ${{ github.action_path }}/copy_blob.py
