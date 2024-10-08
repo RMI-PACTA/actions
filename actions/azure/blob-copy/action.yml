@@ -19,8 +19,6 @@ runs:
     - uses: actions/setup-python@v5
       with:
         python-version: '3.12'
-        cache: 'pip'  # caching pip dependencies
-        cache-dependency-path: ${{ github.action_path }}/requirements.txt
 
     - name: Install Requirements
       shell: sh
