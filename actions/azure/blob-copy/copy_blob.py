@@ -25,7 +25,7 @@ destination = str(os.getenv("DESTINATION"))
 logger.info(f"Destination: {destination}")
 overwrite_flag = bool(os.getenv("OVERWRITE", "False").lower() == "true")
 
-blob_pattern = re.compile(r"^(https://.*.blob.core.windows.net)/(.*?)/(.*)$")
+blob_pattern = re.compile(r"^(https://.*.blob.core.windows.net)/(.*?)(/.*)?$")
 source_account_url = blob_pattern.match(source)
 destination_account_url = blob_pattern.match(destination)
 
@@ -55,8 +55,12 @@ if destination_account_url and not source_account_url:
     logger.debug(f"Account URL: {account_url}")
     container_name = destination_account_url.group(2)
     logger.debug(f"Container Name: {container_name}")
-    blob_path = Path(destination_account_url.group(3))
+    blob_path = destination_account_url.group(3)
+    if not blob_path: 
+        blob_path = ""
+    blob_path = Path(blob_path)
     logger.debug(f"Blob Path: {blob_path}")
+
     blob_service_client = BlobServiceClient(
             account_url=account_url,
             credential=default_credential
@@ -68,7 +72,7 @@ if destination_account_url and not source_account_url:
         with open(source_file, "rb") as data:
             upload_path = blob_path.joinpath(source_file)
             logger.debug(f"Upload Path: {upload_path}")
-            blob_client = container_client.get_blob_client(str(upload_path))
+            blob_client = container_client.get_blob_client("/" + str(upload_path))
             blob_client.upload_blob(
                 data,
                 overwrite = overwrite_flag
@@ -83,7 +87,10 @@ if source_account_url and not destination_account_url:
     logger.debug(f"Account URL: {account_url}")
     container_name = source_account_url.group(2)
     logger.debug(f"Container Name: {container_name}")
-    blob_path = Path(source_account_url.group(3))
+    blob_path = source_account_url.group(3)
+    if not blob_path: 
+        blob_path = ""
+    logger.debug(f"Blob Path: {blob_path}")
 
     blob_service_client = BlobServiceClient(
             account_url=account_url,
