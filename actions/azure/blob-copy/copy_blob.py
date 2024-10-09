@@ -76,7 +76,7 @@ if destination_account_url and not source_account_url:
     destination_files = []
     for source_file in source_files:
         logger.info(f"Copying {source_file} to Blob Storage.")
-        file_mime = mime_types.get(source_file.suffix, None)['mime_type']
+        file_mime = mime_types.get(source_file.suffix, {'mime_type': 'application/octet-stream'})['mime_type']
         logger.debug("File MIME: {file_mime}")
         with open(source_file, "rb") as data:
             upload_path = blob_path.joinpath(source_file)
