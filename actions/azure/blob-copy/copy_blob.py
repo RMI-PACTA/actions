@@ -1,10 +1,12 @@
+import json
 import logging
 import os
 import re
+
 from azure.identity import DefaultAzureCredential
-from azure.storage.blob import BlobServiceClient
-from pathlib import Path
+from azure.storage.blob import BlobServiceClient, ContentSettings
 from mime_types import mime_types
+from pathlib import Path
 
 # create logger
 logger = logging.getLogger(__name__)
@@ -71,6 +73,7 @@ if destination_account_url and not source_account_url:
         )
     container_client = blob_service_client.get_container_client(container_name)
 
+    destination_files = []
     for source_file in source_files:
         logger.info(f"Copying {source_file} to Blob Storage.")
         file_mime = mime_types.get(source_file.suffix, None)['mime_type']
@@ -82,8 +85,9 @@ if destination_account_url and not source_account_url:
             blob_client.upload_blob(
                 data,
                 overwrite = overwrite_flag,
-                content_settings = {"content_type": file_mime}
+                content_settings = ContentSettings(content_type = file_mime)
             )
+            destination_files.append(blob_client.url)
     
 
 
@@ -109,6 +113,8 @@ if source_account_url and not destination_account_url:
         name_starts_with=str(blob_path)
     )
 
+    source_files = []
+    destination_files = []
     for blob in blob_list:
         logger.debug(f"Processing Blob: {blob.name}.")
         if blob.size == 0:
@@ -125,12 +131,16 @@ if source_account_url and not destination_account_url:
             with open(download_path, "wb") as data:
                 blob_client = container_client.get_blob_client(blob.name)
                 data.write(blob_client.download_blob().readall())
+                source_files.append(blob_client.url)
+                destination_files.append(download_path)
 
-
-    logger.debug(f"Blob Path: {blob_path}")
-    blob_service_client = BlobServiceClient(
-            account_url=account_url,
-            credential=default_credential
-        )
-    container_client = blob_service_client.get_container_client(container_name)
-
+logger.debug("Preparing Outputs")
+source_json = json.dumps(list(map(str, source_files)))
+source_output = f'source=' + source_json
+logger.debug(source_output)
+destination_json = json.dumps(list(map(str, destination_files)))
+destination_output = f'destination=' + destination_json
+logger.debug(destination_output)
+with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
+        print(source_output, file=fh)
+        print(destination_output, file=fh)
