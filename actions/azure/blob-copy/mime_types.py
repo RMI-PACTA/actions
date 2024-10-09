@@ -2,7 +2,7 @@ mime_types = {
     '': {'Description': "Unknown/default", 'mime_type': "application/octet-stream"},
     '.3g2': {'Description': "3GPP2 audio/video container", 'mime_type': "video/3gpp2"},
     '.3gp': {'Description': "3GPP audio/video container", 'mime_type': "video/3gpp"},
-    '.7z': {'Description': "7-zip archive", 'mime_type': "application/x-7z-compressed"}
+    '.7z': {'Description': "7-zip archive", 'mime_type': "application/x-7z-compressed"},
     '.aac': {'Description': "AAC audio", 'mime_type': "audio/aac"},
     '.abw': {'Description': "AbiWord document", 'mime_type': "application/x-abiword"},
     '.apng': {'Description': "Animated Portable Network Graphics (APNG) image", 'mime_type': "image/apng"},
@@ -79,5 +79,5 @@ mime_types = {
     '.yaml': {'Description': "YAML", 'mime_type': "application/yaml"},
     '.yml': {'Description': "YAML", 'mime_type': "application/yaml"},
     '.zip': {'Description': "ZIP archive", 'mime_type': "application/zip"},
-    None: {'Description': "Unknown/default", 'mime_type': "application/octet-stream"},
+    None: {'Description': "Unknown/default", 'mime_type': "application/octet-stream"}
 }
