@@ -17,6 +17,13 @@ inputs:
     description: 'Logging Verbosity'
     required: false
     default: 'INFO'
+outputs:
+  source-files:
+    description: 'Path to source files'
+    value: ${{ steps.run-copy.outputs.source }}
+  destination-files:
+    description: 'Path to destination files'
+    value: ${{ steps.run-copy.outputs.destination }}
 runs:
   using: 'composite'
   steps:
@@ -32,6 +39,7 @@ runs:
         echo "::endgroup::"
 
     - name: Copy files
+      id: run-copy
       env:
         SOURCE: ${{ inputs.source }}
         DESTINATION: ${{ inputs.destination }}
