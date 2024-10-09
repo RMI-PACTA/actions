@@ -1,0 +1,48 @@
+---
+name: 'Copy files to/from Azure Blob Container'
+author: 'Alex Axthelm'
+description: 'Copy files to/from Azure Blob Container using azcopy'
+inputs:
+  source:
+    description: 'Source (to copy)'
+    required: true
+  destination:
+    description: 'Destination (copy to)'
+    required: true
+  overwrite:
+    description: 'Overwrite existing files? (default: false)'
+    required: false
+    default: 'false'
+  log_level:
+    description: 'Logging Verbosity'
+    required: false
+    default: 'INFO'
+outputs:
+  source-files:
+    description: 'Path to source files'
+    value: ${{ steps.run-copy.outputs.source-files }}
+  destination-files:
+    description: 'Path to destination files'
+    value: ${{ steps.run-copy.outputs.destination-files }}
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install Requirements
+      shell: sh
+      run: |
+        echo "::group::Requirements Installation"
+        pip install -r ${{ github.action_path }}/requirements.txt
+        echo "::endgroup::"
+
+    - name: Copy files
+      id: run-copy
+      env:
+        SOURCE: ${{ inputs.source }}
+        DESTINATION: ${{ inputs.destination }}
+        OVERWRITE: ${{ inputs.overwrite }}
+      shell: sh
+      run: python ${{ github.action_path }}/copy_blob.py
