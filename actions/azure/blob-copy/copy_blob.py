@@ -4,6 +4,7 @@ import re
 from azure.identity import DefaultAzureCredential
 from azure.storage.blob import BlobServiceClient
 from pathlib import Path
+from mime_types import mime_types
 
 # create logger
 logger = logging.getLogger(__name__)
@@ -69,13 +70,16 @@ if destination_account_url and not source_account_url:
 
     for source_file in source_files:
         logger.info(f"Copying {source_file} to Blob Storage.")
+        file_mime = mime_types.get(source_file.suffix, None).mime_type
+        logger.debug("File MIME: {file_mime}")
         with open(source_file, "rb") as data:
             upload_path = blob_path.joinpath(source_file)
             logger.debug(f"Upload Path: {upload_path}")
             blob_client = container_client.get_blob_client("/" + str(upload_path))
             blob_client.upload_blob(
                 data,
-                overwrite = overwrite_flag
+                overwrite = overwrite_flag,
+                content_settings = {"content_type": file_mime}
             )
     
 
