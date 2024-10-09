@@ -75,7 +75,7 @@ if destination_account_url and not source_account_url:
 
     destination_files = []
     for source_file in source_files:
-        logger.info(f"Copying {source_file} to Blob Storage.")
+        logger.debug(f"Copying {source_file} to Blob Storage.")
         file_mime = mime_types.get(source_file.suffix, {'mime_type': 'application/octet-stream'})['mime_type']
         logger.debug("File MIME: {file_mime}")
         with open(source_file, "rb") as data:
@@ -121,7 +121,7 @@ if source_account_url and not destination_account_url:
             logger.debug(f"Blob {blob.name} is 0 Bytes. This usually indicate s a directory. Skipping.")
             continue
         else:
-            logger.info(f"Downloading {blob.name} to local file.")
+            logger.debug(f"Downloading {blob.name} to local file.")
             download_path = Path(destination).joinpath(blob.name)
             logger.debug(f"Download Path: {download_path}")
             if not overwrite_flag and download_path.exists():
@@ -137,10 +137,10 @@ if source_account_url and not destination_account_url:
 logger.debug("Preparing Outputs")
 source_json = json.dumps(list(map(str, source_files)))
 source_output = f'source=' + source_json
-logger.debug(source_output)
+logger.info(source_output)
 destination_json = json.dumps(list(map(str, destination_files)))
 destination_output = f'destination=' + destination_json
-logger.debug(destination_output)
+logger.info(destination_output)
 with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
         print(source_output, file=fh)
         print(destination_output, file=fh)
