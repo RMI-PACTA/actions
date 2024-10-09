@@ -76,6 +76,8 @@ mime_types = {
     '.xlsx': {'Description': "Microsoft Excel (OpenXML)", 'mime_type': "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"},
     '.xml': {'Description': "XML", 'mime_type': "application/xml"},
     '.xul': {'Description': "XUL", 'mime_type': "application/vnd.mozilla.xul+xml"},
+    '.yaml': {'Description': "YAML", 'mime_type': "application/yaml"},
+    '.yml': {'Description': "YAML", 'mime_type': "application/yaml"},
     '.zip': {'Description': "ZIP archive", 'mime_type': "application/zip"},
     None: {'Description': "Unknown/default", 'mime_type': "application/octet-stream"},
 }
