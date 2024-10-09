@@ -13,6 +13,10 @@ inputs:
     description: 'Overwrite existing files? (default: false)'
     required: false
     default: 'false'
+  log_level:
+    description: 'Logging Verbosity'
+    required: false
+    default: 'INFO'
 runs:
   using: 'composite'
   steps:
