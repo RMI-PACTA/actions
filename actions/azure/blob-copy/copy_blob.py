@@ -8,8 +8,11 @@ from mime_types import mime_types
 
 # create logger
 logger = logging.getLogger(__name__)
+logger.setLevel(level=os.environ.get('LOG_LEVEL', 'INFO').upper())
 # create console handler and set level to debug
 ch = logging.StreamHandler()
+# Set Log level
+ch.setLevel(level=os.environ.get('LOG_LEVEL', 'INFO').upper())
 # create formatter
 formatter = logging.Formatter('%(levelname)s: %(asctime)s %(message)s')
 # add formatter to ch
@@ -70,7 +73,7 @@ if destination_account_url and not source_account_url:
 
     for source_file in source_files:
         logger.info(f"Copying {source_file} to Blob Storage.")
-        file_mime = mime_types.get(source_file.suffix, None).mime_type
+        file_mime = mime_types.get(source_file.suffix, None)['mime_type']
         logger.debug("File MIME: {file_mime}")
         with open(source_file, "rb") as data:
             upload_path = blob_path.joinpath(source_file)
