@@ -20,10 +20,10 @@ inputs:
 outputs:
   source-files:
     description: 'Path to source files'
-    value: ${{ steps.run-copy.outputs.source }}
+    value: ${{ steps.run-copy.outputs.source-files }}
   destination-files:
     description: 'Path to destination files'
-    value: ${{ steps.run-copy.outputs.destination }}
+    value: ${{ steps.run-copy.outputs.destination-files }}
 runs:
   using: 'composite'
   steps:

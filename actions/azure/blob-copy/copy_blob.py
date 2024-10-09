@@ -136,10 +136,10 @@ if source_account_url and not destination_account_url:
 
 logger.debug("Preparing Outputs")
 source_json = json.dumps(list(map(str, source_files)))
-source_output = f'source=' + source_json
+source_output = f'source-files=' + source_json
 logger.info(source_output)
 destination_json = json.dumps(list(map(str, destination_files)))
-destination_output = f'destination=' + destination_json
+destination_output = f'destination-files=' + destination_json
 logger.info(destination_output)
 with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
         print(source_output, file=fh)
