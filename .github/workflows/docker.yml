@@ -41,6 +41,11 @@ on:
         required: false
         default: true
         type: boolean
+      no-cache:
+        description: 'Force Docker build without cache'
+        required: false
+        default: 'false'
+        type: boolean
     outputs:
       full-image-name:
         description: "Full pushed image name including host/registry, name, and tag"
@@ -62,6 +67,7 @@ jobs:
     with:
       image-name: ${{ inputs.image-name }}
       build-platform: ${{ inputs.build-platform }}
+      no-cache: ${{ inputs.no-cache }}
 
   check-r-sysdeps:
     if: ${{ inputs.do-check-r-sysdeps }}
