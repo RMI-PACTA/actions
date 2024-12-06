@@ -29,7 +29,12 @@ on:
             "linux/amd64",
             "linux/arm64"
           ]
-    outputs:
+      no-cache:
+        description: force docker build without cache
+        required: false
+        default: false
+        type: boolean
+      outputs:
       full-image-name:
         description: "Full pushed image name including host/registry, name, and tag"
         value: ${{ jobs.merge.outputs.full-image-name }}
@@ -169,7 +174,8 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=min
           # but don't cache the install pacta step.
-          no-cache-filters: install-pacta
+          no-cache-filters: install-pactai
+          no-cache: ${{ inputs.no-cache }
 
       # export the digest (SHA) of the image built, so that the merge step can include them
       - name: Export digest
