@@ -34,7 +34,7 @@ on:
         required: false
         default: false
         type: boolean
-      outputs:
+    outputs:
       full-image-name:
         description: "Full pushed image name including host/registry, name, and tag"
         value: ${{ jobs.merge.outputs.full-image-name }}
