@@ -44,7 +44,7 @@ on:
       no-cache:
         description: 'Force Docker build without cache'
         required: false
-        default: 'false'
+        default: false
         type: boolean
     outputs:
       full-image-name:
