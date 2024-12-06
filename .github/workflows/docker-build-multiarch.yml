@@ -175,7 +175,7 @@ jobs:
           cache-to: type=gha,mode=min
           # but don't cache the install pacta step.
           no-cache-filters: install-pacta
-          no-cache: ${{ inputs.no-cache }
+          no-cache: ${{ inputs.no-cache }}
 
       # export the digest (SHA) of the image built, so that the merge step can include them
       - name: Export digest
