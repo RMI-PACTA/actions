@@ -12,9 +12,6 @@
   },
   "rules": [
     {
-      "type": "deletion"
-    },
-    {
       "type": "non_fast_forward"
     },
     {
@@ -36,6 +33,21 @@
           "merge"
         ]
       }
+    },
+    {
+      "type": "deletion"
+    }
+  ],
+  "bypass_actors": [
+    {
+      "actor_id": 2,
+      "actor_type": "RepositoryRole",
+      "bypass_mode": "always"
+    },
+    {
+      "actor_id": 5,
+      "actor_type": "RepositoryRole",
+      "bypass_mode": "always"
     }
   ]
 }
