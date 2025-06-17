@@ -289,6 +289,7 @@ jobs:
         working-directory: /tmp/digests
         run: |
           docker buildx imagetools create \
+            --dry-run \
             ${{ env.ANNOTATION_STRING }} \
             ${{ env.TAG_STRING }} \
             $(printf '${{ needs.build.outputs.registry-image }}@sha256:%s ' *)
