@@ -46,6 +46,11 @@ on:
         required: false
         default: false
         type: boolean
+      push-image:
+        description: push final image to registry?
+        required: false
+        default: true
+        type: boolean
     outputs:
       full-image-name:
         description: "Full pushed image name including host/registry, name, and tag"
@@ -68,6 +73,7 @@ jobs:
       image-name: ${{ inputs.image-name }}
       build-platform: ${{ inputs.build-platform }}
       no-cache: ${{ inputs.no-cache }}
+      push-image: ${{ inputs.push-image }}
 
   check-r-sysdeps:
     if: ${{ inputs.do-check-r-sysdeps }}
@@ -77,7 +83,7 @@ jobs:
       image: ${{needs.build-docker-image.outputs.full-image-name}}
 
   add-comment:
-    if: ${{ github.event_name == 'pull_request' }}
+    if: ${{ github.event_name == 'pull_request' && inputs.push-image }}
     uses: ./.github/workflows/add-comment-table.yml
     needs: [build-docker-image]
     with:
