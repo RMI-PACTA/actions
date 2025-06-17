@@ -83,7 +83,7 @@ jobs:
       image: ${{needs.build-docker-image.outputs.full-image-name}}
 
   add-comment:
-    if: ${{ github.event_name == 'pull_request' }}
+    if: ${{ github.event_name == 'pull_request' && inputs.push-image }}
     uses: ./.github/workflows/add-comment-table.yml
     needs: [build-docker-image]
     with:
