@@ -73,7 +73,7 @@ jobs:
       image-name: ${{ inputs.image-name }}
       build-platform: ${{ inputs.build-platform }}
       no-cache: ${{ inputs.no-cache }}
-      push-image: ${{ inupts.push-image }}
+      push-image: ${{ inputs.push-image }}
 
   check-r-sysdeps:
     if: ${{ inputs.do-check-r-sysdeps }}
