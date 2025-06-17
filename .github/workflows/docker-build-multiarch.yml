@@ -270,6 +270,18 @@ jobs:
           echo "tags: $TAG_STRING"
           echo "TAG_STRING=$TAG_STRING" >> $GITHUB_ENV
 
+      # This block is an alternative to the next one (opposite `if`), and
+      # just builds, without pushing to registry
+      - name: Create manifest list (no push)
+        if: ${{ !inputs.push-image }}
+        working-directory: /tmp/digests
+        run: |
+          docker buildx imagetools create \
+            --dry-run \
+            ${{ env.ANNOTATION_STRING }} \
+            ${{ env.TAG_STRING }} \
+            $(printf '${{ needs.build.outputs.registry-image }}@sha256:%s ' *)
+
       # Actually create the multi-architecture manifest/index. Note that this
       # command cannot be reproduced locally (unless you have write permissions
       # for the GHCR repo). since it automatically pushes.
@@ -282,25 +294,15 @@ jobs:
             ${{ env.TAG_STRING }} \
             $(printf '${{ needs.build.outputs.registry-image }}@sha256:%s ' *)
 
-      # This block is an alternative to the previous one (opposite `if`), and
-      # just builds, without pushing to registry
-      - name: Create manifest list (no push)
-        if: ${{ !inputs.push-image }}
-        working-directory: /tmp/digests
-        run: |
-          docker buildx imagetools create \
-            --dry-run \
-            ${{ env.ANNOTATION_STRING }} \
-            ${{ env.TAG_STRING }} \
-            $(printf '${{ needs.build.outputs.registry-image }}@sha256:%s ' *)
-
       # inspect the manifest we just created. Debugging
       - name: Inspect image
+        if: ${{ inputs.push-image }}
         run: |
           docker buildx imagetools inspect ${{ needs.build.outputs.registry-image }}:${{ steps.meta.outputs.version }} --raw
 
       # Export the image name, for use in downstream jobs
       - name: Export Outputs
+        if: ${{ inputs.push-image }}
         id: export-outputs
         run: |
           first_tag=$(jq -cr '.tags[0]' <<< "$DOCKER_METADATA_OUTPUT_JSON")
@@ -309,6 +311,7 @@ jobs:
           echo "full-image-name=$first_tag" >> "$GITHUB_OUTPUT"
 
       - name: Prepare artifact for comment
+        if: ${{ inputs.push-image }}
         run: |
           mkdir -p /tmp/comment-json
           json_filename=$( \
@@ -325,6 +328,7 @@ jobs:
 
 
       - name: Upload comment JSON
+        if: ${{ inputs.push-image }}
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.json-filename }}
