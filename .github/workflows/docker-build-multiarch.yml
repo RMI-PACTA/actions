@@ -34,6 +34,11 @@ on:
         required: false
         default: false
         type: boolean
+      push-image:
+        description: push final image to registry?
+        required: false
+        default: true
+        type: boolean
     outputs:
       full-image-name:
         description: "Full pushed image name including host/registry, name, and tag"
@@ -269,6 +274,18 @@ jobs:
       # command cannot be reproduced locally (unless you have write permissions
       # for the GHCR repo). since it automatically pushes.
       - name: Create manifest list and push
+        if: ${{ inputs.push-image }}
+        working-directory: /tmp/digests
+        run: |
+          docker buildx imagetools create \
+            ${{ env.ANNOTATION_STRING }} \
+            ${{ env.TAG_STRING }} \
+            $(printf '${{ needs.build.outputs.registry-image }}@sha256:%s ' *)
+
+      # This block is an alternative to the previous one (opposite `if`), and
+      # just builds, without pushing to registry
+      - name: Create manifest list (no push)
+        if: ${{ !inputs.push-image }}
         working-directory: /tmp/digests
         run: |
           docker buildx imagetools create \
