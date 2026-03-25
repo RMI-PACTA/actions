@@ -1,5 +1,9 @@
 # Actions
 
+[![Project Status: Unsupported](https://www.repostatus.org/badges/latest/unsupported.svg)](https://www.repostatus.org/#unsupported)
+
+**This project is archived for future reference, but no new work is expected in this repository.**
+
 This repo contains actions and workflow files for [GitHub Actions](https://github.com/features/actions).
 It also contains example workflow files for inclusion in other repos which call the GitHub actions defined in this repo.
 
